@@ -1,0 +1,17 @@
+*~
+*.dylib
+*.la
+*.lo
+*.o
+*.swp
+.deps
+.libs
+autom4te.cache
+config.guess
+config.h
+config.log
+config.sub
+config.status
+libtool
+stamp-h1
+Makefile

@@ -1,0 +1,6 @@
+libparse_delimited_text NEWS - User visible changes.
+
+* Noteworthy changes in release ?.? (????-??-??) [?]
+
+** AT_BANNER() with empty argument will cause visual separation from previous
+   test category.
