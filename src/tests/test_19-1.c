@@ -25,15 +25,20 @@
 
 int main(int argc, char *argv[], char *envp[])
 {
-  /* |a|b\_^|c| */
-  char data[] = "a\\_^_/b\\_^\\_^_/c\x0a";
-  struct event results[] =
-    { {DELIM_COL, 0, 1, "a"},
-      {DELIM_COL, 0, 4, "b\\_^"},
-      {DELIM_COL, 0, 1, "c"},
-      {DELIM_ROW, '\x0a', 1, NULL}, {DELIM_END, 0, 0, NULL} };
+  /* |'a;b'|| '' |'' | ''|''| */
+  char data[] = "'''a;b'''||||' '''' '||''''' '||' '''''||''''''";
+  struct event results[] = {
+    {PDT_FLD, 0, 5, "'a;b'"},
+    {PDT_FLD, 0, 0, ""},
+    {PDT_FLD, 0, 4, " '' "},
+    {PDT_FLD, 0, 3, "'' "},
+    {PDT_FLD, 0, 3, " ''"},
+    {PDT_FLD, 0, 2, "''"},
+    {PDT_REC, NULL, 0, NULL},
+    {PDT_END, 0, 0, NULL}
+  };
 
-  run_test("test_19-1", 0, data, sizeof(data) - 1, results, "\\_^_/", "");
+  run_test("test_19-1", 0, data, sizeof(data) - 1, results, "||", "'");
 
   return test_failed;
 }

@@ -43,7 +43,8 @@ check_PROGRAMS = test_01-1$(EXEEXT) test_01-2$(EXEEXT) \
 	test_13-1$(EXEEXT) test_14-1$(EXEEXT) test_14-2$(EXEEXT) \
 	test_15-1$(EXEEXT) test_15-2$(EXEEXT) test_16-1$(EXEEXT) \
 	test_16-2$(EXEEXT) test_16-3$(EXEEXT) test_18-1$(EXEEXT) \
-	test_19-1$(EXEEXT)
+	test_19-1$(EXEEXT) test_20-1$(EXEEXT) test_21-1$(EXEEXT) \
+	test_22-1$(EXEEXT) test_23-1$(EXEEXT) test_24-1$(EXEEXT)
 subdir = src/tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -174,6 +175,26 @@ test_19_1_SOURCES = test_19-1.c
 test_19_1_OBJECTS = test_19-1.$(OBJEXT)
 test_19_1_LDADD = $(LDADD)
 test_19_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_20_1_SOURCES = test_20-1.c
+test_20_1_OBJECTS = test_20-1.$(OBJEXT)
+test_20_1_LDADD = $(LDADD)
+test_20_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_21_1_SOURCES = test_21-1.c
+test_21_1_OBJECTS = test_21-1.$(OBJEXT)
+test_21_1_LDADD = $(LDADD)
+test_21_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_22_1_SOURCES = test_22-1.c
+test_22_1_OBJECTS = test_22-1.$(OBJEXT)
+test_22_1_LDADD = $(LDADD)
+test_22_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_23_1_SOURCES = test_23-1.c
+test_23_1_OBJECTS = test_23-1.$(OBJEXT)
+test_23_1_LDADD = $(LDADD)
+test_23_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_24_1_SOURCES = test_24-1.c
+test_24_1_OBJECTS = test_24-1.$(OBJEXT)
+test_24_1_LDADD = $(LDADD)
+test_24_1_DEPENDENCIES = ../libparse_delimited_text.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -192,14 +213,16 @@ SOURCES = test_01-1.c test_01-2.c test_02-1.c test_02-2.c test_03-1.c \
 	test_06-1.c test_06-2.c test_07-1.c test_07-2.c test_08-1.c \
 	test_09-1.c test_10-1.c test_11-1.c test_12-1.c test_12-2.c \
 	test_13-1.c test_14-1.c test_14-2.c test_15-1.c test_15-2.c \
-	test_16-1.c test_16-2.c test_16-3.c test_18-1.c test_19-1.c
+	test_16-1.c test_16-2.c test_16-3.c test_18-1.c test_19-1.c \
+	test_20-1.c test_21-1.c test_22-1.c test_23-1.c test_24-1.c
 DIST_SOURCES = test_01-1.c test_01-2.c test_02-1.c test_02-2.c \
 	test_03-1.c test_03-2.c test_04-1.c test_04-2.c test_05-1.c \
 	test_05-2.c test_06-1.c test_06-2.c test_07-1.c test_07-2.c \
 	test_08-1.c test_09-1.c test_10-1.c test_11-1.c test_12-1.c \
 	test_12-2.c test_13-1.c test_14-1.c test_14-2.c test_15-1.c \
 	test_15-2.c test_16-1.c test_16-2.c test_16-3.c test_18-1.c \
-	test_19-1.c
+	test_19-1.c test_20-1.c test_21-1.c test_22-1.c test_23-1.c \
+	test_24-1.c
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
@@ -455,6 +478,21 @@ test_18-1$(EXEEXT): $(test_18_1_OBJECTS) $(test_18_1_DEPENDENCIES)
 test_19-1$(EXEEXT): $(test_19_1_OBJECTS) $(test_19_1_DEPENDENCIES) 
 	@rm -f test_19-1$(EXEEXT)
 	$(LINK) $(test_19_1_OBJECTS) $(test_19_1_LDADD) $(LIBS)
+test_20-1$(EXEEXT): $(test_20_1_OBJECTS) $(test_20_1_DEPENDENCIES) 
+	@rm -f test_20-1$(EXEEXT)
+	$(LINK) $(test_20_1_OBJECTS) $(test_20_1_LDADD) $(LIBS)
+test_21-1$(EXEEXT): $(test_21_1_OBJECTS) $(test_21_1_DEPENDENCIES) 
+	@rm -f test_21-1$(EXEEXT)
+	$(LINK) $(test_21_1_OBJECTS) $(test_21_1_LDADD) $(LIBS)
+test_22-1$(EXEEXT): $(test_22_1_OBJECTS) $(test_22_1_DEPENDENCIES) 
+	@rm -f test_22-1$(EXEEXT)
+	$(LINK) $(test_22_1_OBJECTS) $(test_22_1_LDADD) $(LIBS)
+test_23-1$(EXEEXT): $(test_23_1_OBJECTS) $(test_23_1_DEPENDENCIES) 
+	@rm -f test_23-1$(EXEEXT)
+	$(LINK) $(test_23_1_OBJECTS) $(test_23_1_LDADD) $(LIBS)
+test_24-1$(EXEEXT): $(test_24_1_OBJECTS) $(test_24_1_DEPENDENCIES) 
+	@rm -f test_24-1$(EXEEXT)
+	$(LINK) $(test_24_1_OBJECTS) $(test_24_1_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -492,6 +530,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_16-3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_18-1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_19-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_20-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_21-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_22-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_23-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_24-1.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

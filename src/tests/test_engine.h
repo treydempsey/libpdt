@@ -31,10 +31,10 @@
 #include <class_ArrayElement.h>
 #include <class_ParseDelimitedText.h>
 
-#define DELIM_END 0
-#define DELIM_COL 1
-#define DELIM_ROW 2
-#define DELIM_ERR 3
+#define PDT_END 0
+#define PDT_FLD 1
+#define PDT_REC 2
+#define PDT_ERR 3
 
 #define DO_TEST(name, options) test_parser("test" #name, options, test ## name ## _data, \
         sizeof(test ## name ## _data) - 1, test ## name ## _results, \
@@ -76,7 +76,7 @@ void
 field_callback(ParseDelimitedText *parser, String *parsed_field)
 {
   /* Make sure we were expecting a column */
-  if(event_ptr->event_type != DELIM_COL) {
+  if(event_ptr->event_type != PDT_FLD) {
     parser->stop = 1;
     fail_parser("didn't expect a column");
   }
@@ -103,7 +103,7 @@ void
 record_callback(ParseDelimitedText *parser, char eol)
 {
   /* Make sure we were expecting an the end of a row */
-  if(event_ptr->event_type != DELIM_ROW) {
+  if(event_ptr->event_type != PDT_REC) {
     parser->stop = 1;
     fail_parser("didn't expect end of row");
   }
@@ -159,7 +159,7 @@ run_test(
       size_t bytes = size < len - bytes_processed ? size : len - bytes_processed;
       retval = parser->m->parse(parser, input + bytes_processed, bytes);
       if(retval != bytes) {
-        if(event_ptr->event_type != DELIM_ERR) {
+        if(event_ptr->event_type != PDT_ERR) {
           fail_parser("unexpected parse error occured");
         }
       }
@@ -169,7 +169,7 @@ run_test(
     result = parser->m->finish(parser);
 
     if(result != 0) {
-      if(event_ptr->event_type != DELIM_ERR) {
+      if(event_ptr->event_type != PDT_ERR) {
         fail_parser("unexpected parse error occured");
       }
       else {
@@ -180,7 +180,7 @@ run_test(
 
     parser->m->free(parser);
 
-    if(event_ptr->event_type != DELIM_END) {
+    if(event_ptr->event_type != PDT_END) {
       fail_parser("unexpected end of input");
       return 0;
     }

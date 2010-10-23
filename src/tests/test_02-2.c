@@ -27,16 +27,18 @@ int main(int argc, char *argv[], char *envp[])
 {
   /* ||||||| */
   char data[] = ",,,,,\x0a";
-  struct event results[] =
-    { {DELIM_COL, 0, 0, ""},
-      {DELIM_COL, 0, 0, ""},
-      {DELIM_COL, 0, 0, ""},
-      {DELIM_COL, 0, 0, ""},
-      {DELIM_COL, 0, 0, ""},
-      {DELIM_COL, 0, 0, ""},
-      {DELIM_ROW, '\x0a', 1, NULL}, {DELIM_END, 0, 0, NULL} };
+  struct event results[] = {
+    {PDT_FLD, 0, 0, ""},
+    {PDT_FLD, 0, 0, ""},
+    {PDT_FLD, 0, 0, ""},
+    {PDT_FLD, 0, 0, ""},
+    {PDT_FLD, 0, 0, ""},
+    {PDT_FLD, 0, 0, ""},
+    {PDT_REC, '\x0a', 1, NULL},
+    {PDT_END, 0, 0, NULL}
+  };
 
-  run_test("test_02-2", DELIM_STRICT, data, sizeof(data) - 1, results, ",", "\"");
+  run_test("test_02-2", PDT_STRICT, data, sizeof(data) - 1, results, ",", "\"");
 
   return test_failed;
 }

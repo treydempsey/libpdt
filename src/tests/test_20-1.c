@@ -25,13 +25,23 @@
 
 int main(int argc, char *argv[], char *envp[])
 {
-  /* empty */
-  char data[] = "\x0a\x0a\x0a\x0a";
+  /* |a|b|c|
+     |d||f|  */
+  char data[] = "a~|~b~|~c\x0a"
+                "d~|~~|~f\x0a";
   struct event results[] = {
+    {PDT_FLD, 0, 1, "a"},
+    {PDT_FLD, 0, 1, "b"},
+    {PDT_FLD, 0, 1, "c"},
+    {PDT_REC, '\x0a', 1, NULL},
+    {PDT_FLD, 0, 1, "d"},
+    {PDT_FLD, 0, 0, ""},
+    {PDT_FLD, 0, 1, "f"},
+    {PDT_REC, '\x0a', 1, NULL},
     {PDT_END, 0, 0, NULL}
   };
 
-  run_test("test_12-1", 0, data, sizeof(data) - 1, results, ",", "\"");
+  run_test("test_20-1", 0, data, sizeof(data) - 1, results, "~|~", "");
 
   return test_failed;
 }

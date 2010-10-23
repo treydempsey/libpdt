@@ -27,11 +27,13 @@ int main(int argc, char *argv[], char *envp[])
 {
   /* |1|2| 3 | */
   char data[] = "\"1\",\"2\",\" 3 ";
-  struct event results[] = 
-    { {DELIM_COL, 0, 1, "1"},
-      {DELIM_COL, 0, 1, "2"},
-      {DELIM_COL, 0, 3, " 3 "},
-      {DELIM_ROW, 0, 1, NULL}, {DELIM_END, 0, 0, NULL} };
+  struct event results[] = {
+    {PDT_FLD, 0, 1, "1"},
+    {PDT_FLD, 0, 1, "2"},
+    {PDT_FLD, 0, 3, " 3 "},
+    {PDT_REC, 0, 1, NULL},
+    {PDT_END, 0, 0, NULL}
+  };
 
   run_test("test_16-1", 0, data, sizeof(data) - 1, results, ",", "\"");
 

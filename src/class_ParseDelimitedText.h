@@ -24,7 +24,9 @@
 #ifndef _CLASS_PARSEDELIMITEDTEXT_H_
 #define _CLASS_PARSEDELIMITEDTEXT_H_
 
+/* Dependencies */
 #include <class_String.h>
+
 
 /* Version */
 #define CLASS_PARSEDELIMITEDTEXT_MAJOR   4
@@ -56,8 +58,8 @@ typedef struct ParseDelimitedText {
 
   String *trailing_space;
 
-  void (*field_callback)(struct ParseDelimitedText *parser, String *field);
-  void (*record_callback)(struct ParseDelimitedText *parser, char eol);
+  void   (*field_callback)(struct ParseDelimitedText *parser, String *field);
+  void   (*record_callback)(struct ParseDelimitedText *parser, char eol);
   
   struct ParseDelimitedTextMethods *m;
 } ParseDelimitedText;
@@ -99,6 +101,13 @@ extern ParseDelimitedText       *null_ParseDelimitedText;
 #endif /* not _CLASS_PARSEDELIMITEDTEXT_I_H_ */
 
 
+/* Parser Options */
+#define PDT_STRICT              1 /* Enable strict mode */
+#define PDT_REPALL_NL           2 /* Report all unquoted carriage returns and linefeeds */
+#define PDT_STRICT_FINI         4 /* Causes csv_fini to return CSV_EPARSE if last
+                                       field is quoted and doesn't containg ending quote */
+
+
 /* Parse States */
 #define ST_RECORD_NOT_BEGUN     0 /* There have not been any fields encountered for this row */
 #define ST_FIELD_NOT_BEGUN      1 /* There have been fields but we are currently not in one */
@@ -134,17 +143,10 @@ extern ParseDelimitedText       *null_ParseDelimitedText;
 #define CL_WHITE_SPACE          5
 
 /* Error Codes */
-#define DELIM_SUCCESS           0
-#define DELIM_EPARSE            1 /* Parse error in strict mode */
-#define DELIM_ENOMEM            2 /* Out of memory while increasing buffer size */
-#define DELIM_ETOOBIG           3 /* Buffer larger than SIZE_MAX needed */
-#define DELIM_EINVALID          4 /* Invalid code,should never be received from csv_error*/
-
-
-/* Parser Options */
-#define DELIM_STRICT            1 /* Enable strict mode */
-#define DELIM_REPALL_NL         2 /* Report all unquoted carriage returns and linefeeds */
-#define DELIM_STRICT_FINI       4 /* Causes csv_fini to return CSV_EPARSE if last
-                                       field is quoted and doesn't containg ending quote */
+#define PDT_SUCCESS             0
+#define PDT_EPARSE              1 /* Parse error in strict mode */
+#define PDT_ENOMEM              2 /* Out of memory while increasing buffer size */
+#define PDT_ETOOBIG             3 /* Buffer larger than SIZE_MAX needed */
+#define PDT_EINVALID            4 /* Invalid code,should never be received from csv_error*/
 
 #endif /* not _CLASS_PARSEDELIMITEDTEXT_H_ */

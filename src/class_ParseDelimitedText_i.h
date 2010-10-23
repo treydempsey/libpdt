@@ -51,6 +51,7 @@ static char *               ParseDelimitedText_status_to_s(ParseDelimitedText *s
 static char *               ParseDelimitedText_char_class_to_s(ParseDelimitedText *self);
 
 static ParseDelimitedText * _ParseDelimitedText_identify_character(ParseDelimitedText *self);
+static int                  debug(const char *format, ...);
 
 /* Global Variables */
 ParseDelimitedText        *null_ParseDelimitedText = NULL;
