@@ -25,7 +25,7 @@ typedef struct ParseDelimitedText {
   int    status;
   int    stop;
 
-  size_t blk_size;
+  size_t block_size;
   size_t record_count;
 
   String *delimiter;
@@ -45,12 +45,12 @@ typedef struct ParseDelimitedTextMethods {
   ParseDelimitedText * (*free)(ParseDelimitedText *self);
 
   /* Properties */
-  size_t               (*blk_size)(ParseDelimitedText *self);
-  ParseDelimitedText * (*set_blk_size)(ParseDelimitedText *self, size_t blk_size);
+  size_t               (*block_size)(ParseDelimitedText *self);
+  ParseDelimitedText * (*set_block_size)(ParseDelimitedText *self, size_t new_block_size);
   String*              (*delimiter)(ParseDelimitedText *self);
-  ParseDelimitedText * (*set_delimiter)(ParseDelimitedText *self, char *delimiter);
+  ParseDelimitedText * (*set_delimiter)(ParseDelimitedText *self, char *new_delimiter);
   String *             (*quote)(ParseDelimitedText *self);
-  ParseDelimitedText * (*set_quote)(ParseDelimitedText *self, char *quote);
+  ParseDelimitedText * (*set_quote)(ParseDelimitedText *self, char *new_quote);
 
   /* Instance Methods */
   size_t               (*parse)(ParseDelimitedText *self, char *input, size_t input_length);

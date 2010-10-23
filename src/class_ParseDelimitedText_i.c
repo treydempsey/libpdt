@@ -1,22 +1,3 @@
-/*
-libcsv - parse and write csv data
-Copyright (C) 2008  Robert Gamble
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-*/
-
 #include "dependencies.h"
 #include "class_ParseDelimitedText_i.h"
 
@@ -35,8 +16,8 @@ class_ParseDelimitedText(void)
     ParseDelimitedText_methods.init = ParseDelimitedText_init;
     ParseDelimitedText_methods.free = ParseDelimitedText_free;
 
-    ParseDelimitedText_methods.blk_size = ParseDelimitedText_blk_size;
-    ParseDelimitedText_methods.set_blk_size = ParseDelimitedText_set_blk_size;
+    ParseDelimitedText_methods.block_size = ParseDelimitedText_block_size;
+    ParseDelimitedText_methods.set_block_size = ParseDelimitedText_set_block_size;
     ParseDelimitedText_methods.delimiter = ParseDelimitedText_delimiter;
     ParseDelimitedText_methods.set_delimiter = ParseDelimitedText_set_delimiter;
     ParseDelimitedText_methods.quote = ParseDelimitedText_quote;
@@ -113,7 +94,7 @@ ParseDelimitedText_init(ParseDelimitedText *self, unsigned char options)
   self->field               = new_String("", 4096, 0);
   self->status              = DELIM_SUCCESS;
   self->options             = options;
-  self->blk_size            = 4096;
+  self->block_size            = 4096;
   self->compound_delimiter  = 0;
 
   self->lookahead           = new_String("", 10, 0);
@@ -147,16 +128,16 @@ ParseDelimitedText_free(ParseDelimitedText *self)
  ************/
 
 static size_t
-ParseDelimitedText_blk_size(ParseDelimitedText *self)
+ParseDelimitedText_block_size(ParseDelimitedText *self)
 {
-  return self->blk_size;
+  return self->block_size;
 }
 
 static ParseDelimitedText *
-ParseDelimitedText_set_blk_size(ParseDelimitedText *self, size_t blk_size)
+ParseDelimitedText_set_block_size(ParseDelimitedText *self, size_t new_block_size)
 {
   if(self != null_ParseDelimitedText) {
-    self->blk_size = blk_size;
+    self->block_size = new_block_size;
   }
 
   return self;
@@ -170,14 +151,14 @@ ParseDelimitedText_delimiter(ParseDelimitedText *self)
 }
 
 static ParseDelimitedText *
-ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *delimiter)
+ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter)
 {
   if(self != null_ParseDelimitedText) {
     if(self->delimiter != null_String) {
       self->delimiter = self->delimiter->m->free(self->delimiter);
     }
 
-    self->delimiter = new_String(delimiter, strlen(delimiter) + 1, strlen(delimiter));
+    self->delimiter = new_String(new_delimiter, strlen(new_delimiter) + 1, strlen(new_delimiter));
     self->compound_delimiter = (self->delimiter->length > 1) ? 1 : 0;
   }
 
@@ -192,14 +173,14 @@ ParseDelimitedText_quote(ParseDelimitedText *self)
 }
 
 static ParseDelimitedText *
-ParseDelimitedText_set_quote(ParseDelimitedText *self, char *quote)
+ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote)
 {
   if(self != null_ParseDelimitedText) {
     if(self->quote != null_String) {
       self->quote = self->quote->m->free(self->quote);
     }
 
-    self->quote = new_String(quote, strlen(quote) + 1, strlen(quote));
+    self->quote = new_String(new_quote, strlen(new_quote) + 1, strlen(new_quote));
   }
 
   return self;
