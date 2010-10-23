@@ -221,11 +221,12 @@ ParseDelimitedText_parse(ParseDelimitedText *self, char *input, size_t input_len
       _ParseDelimitedText_identify_character(self);
 
       /* DEBUG */
-      fflush(stdout);
-      printf("I: >>%s<<\n", self->input->string);
-      printf("S: %s, C: %s, P: %zu, L: >>%s<<, F: >>%s<<\n", self->m->state_to_s(self), self->m->char_class_to_s(self), self->input->position, self->lookahead->string, self->field->string);
-      printf("-----\n");
-      fflush(stdout);
+      if(getenv("DEBUG") != NULL) {
+        printf("I: >>%s<<\n", self->input->string);
+        printf("S: %s, C: %s, P: %zu, L: >>%s<<, F: >>%s<<\n", self->m->state_to_s(self), self->m->char_class_to_s(self), self->input->position, self->lookahead->string, self->field->string);
+        printf("-----\n");
+        fflush(stdout);
+      }
 
       switch(self->state) {
         case ST_RECORD_NOT_BEGUN:
@@ -444,7 +445,10 @@ ParseDelimitedText_fire_field_callback(ParseDelimitedText *self)
 {
   if(self != null_ParseDelimitedText) {
     /* DEBUG */
-    printf("!! fire_field_callback(~%s~, ~%zu~)\n", self->field->string, self->field->length);
+    if(getenv("DEBUG") != NULL) {
+      printf("!! fire_field_callback(~%s~, ~%zu~)\n", self->field->string, self->field->length);
+      fflush(stdout);
+    }
 
     if(self->field_callback != NULL) {
       self->field_callback(self, self->field);
@@ -462,7 +466,10 @@ ParseDelimitedText_fire_record_callback(ParseDelimitedText *self)
 {
   if(self != null_ParseDelimitedText) {
     /* DEBUG */
-    printf("!! Fire record_callback(~%02x~)\n", *(self->lookahead->string));
+    if(getenv("DEBUG") != NULL) {
+      printf("!! Fire record_callback(~%02x~)\n", *(self->lookahead->string));
+      fflush(stdout);
+    }
 
     if(self->record_callback != NULL) {
       self->record_callback(self, *(self->lookahead->string));
@@ -537,13 +544,19 @@ _ParseDelimitedText_identify_character(ParseDelimitedText *self)
   size_t delimiter_amt;  /* amount to compare for input and delimiter */
   size_t delimiter_matched;
   delimiter_amt = (self->lookahead->length < self->delimiter->length - self->delimiter->position) ? self->lookahead->length : self->delimiter->length - self->delimiter->position;
-  printf("delimiter_amt: %zu, delimiter_position: %zu\n", delimiter_amt, self->delimiter->position);
-  printf("comparen: %i %c <=> %c\n", self->lookahead->m->comparen(self->lookahead, self->delimiter, delimiter_amt), *(self->lookahead->string), *(self->delimiter->string + self->delimiter->position));
+
+  /* DEBUG */
+  if(getenv("DEBUG") != NULL) {
+    printf("delimiter_amt: %zu, delimiter_position: %zu\n", delimiter_amt, self->delimiter->position);
+    printf("comparen: %i %c <=> %c\n", self->lookahead->m->comparen(self->lookahead, self->delimiter, delimiter_amt), *(self->lookahead->string), *(self->delimiter->string + self->delimiter->position));
+    fflush(stdout);
+  }
 
   /* Simple FS */
   if(self->compound_delimiter == 0
      && *(self->lookahead->string) == *(self->delimiter->string)) {
     self->character_class = CL_FS;
+    return self;
   }
   /* Multichar FS */
   else if(self->compound_delimiter != 0) {
@@ -569,7 +582,8 @@ _ParseDelimitedText_identify_character(ParseDelimitedText *self)
       self->delimiter->position = 0;
       self->field->m->append_slice(self->field, self->delimiter, delimiter_matched);
 
-      printf("comparen: %i %c <=> %c\n", self->lookahead->m->comparen(self->lookahead, self->delimiter, delimiter_amt), *(self->lookahead->string), *(self->delimiter->string + self->delimiter->position));
+      fflush(stdout);
+
       if(self->lookahead->m->comparen(self->lookahead, self->delimiter, delimiter_amt) == 0) {
         if(delimiter_amt > 0) {
           self->input->position += delimiter_amt - 1;

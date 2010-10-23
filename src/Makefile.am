@@ -6,7 +6,3 @@ libparse_delimited_text_la_includedir = $(includedir)/parse_delimited_text
 libparse_delimited_text_la_include_HEADERS = class_Array.h class_ArrayElement.h class_ParseDelimitedText.h class_String.h
 noinst_HEADERS = class_ArrayElement_i.h class_Array_i.h class_ParseDelimitedText_i.h class_String_i.h dependencies.h
 libparse_delimited_text_la_LDFLAGS = -version-info 0:0:0
-
-TESTS = $(check_PROGRAMS)
-check_PROGRAMS = test_parse_delimited_text
-test_parse_delimited_text_LDADD = libparse_delimited_text.la
