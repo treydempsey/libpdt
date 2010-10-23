@@ -139,9 +139,6 @@ run_test(
         if(event_ptr->event_type != DELIM_ERR) {
           fail_parser("unexpected parse error occured");
         }
-        else {
-          parser->m->free(parser);
-        }
       }
       bytes_processed += bytes;
     } while(bytes_processed < len);

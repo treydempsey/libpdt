@@ -35,7 +35,15 @@ build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = test_01-1$(EXEEXT) test_01-2$(EXEEXT) \
 	test_02-1$(EXEEXT) test_02-2$(EXEEXT) test_03-1$(EXEEXT) \
-	test_03-2$(EXEEXT) test_04-1$(EXEEXT) test_04-2$(EXEEXT)
+	test_03-2$(EXEEXT) test_04-1$(EXEEXT) test_04-2$(EXEEXT) \
+	test_05-1$(EXEEXT) test_05-2$(EXEEXT) test_06-1$(EXEEXT) \
+	test_06-2$(EXEEXT) test_07-1$(EXEEXT) test_07-2$(EXEEXT) \
+	test_08-1$(EXEEXT) test_09-1$(EXEEXT) test_10-1$(EXEEXT) \
+	test_11-1$(EXEEXT) test_12-1$(EXEEXT) test_12-2$(EXEEXT) \
+	test_13-1$(EXEEXT) test_14-1$(EXEEXT) test_14-2$(EXEEXT) \
+	test_15-1$(EXEEXT) test_15-2$(EXEEXT) test_16-1$(EXEEXT) \
+	test_16-2$(EXEEXT) test_16-3$(EXEEXT) test_18-1$(EXEEXT) \
+	test_19-1$(EXEEXT)
 subdir = src/tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -81,6 +89,94 @@ test_04_2_SOURCES = test_04-2.c
 test_04_2_OBJECTS = test_04-2.$(OBJEXT)
 test_04_2_LDADD = $(LDADD)
 test_04_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_05_1_SOURCES = test_05-1.c
+test_05_1_OBJECTS = test_05-1.$(OBJEXT)
+test_05_1_LDADD = $(LDADD)
+test_05_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_05_2_SOURCES = test_05-2.c
+test_05_2_OBJECTS = test_05-2.$(OBJEXT)
+test_05_2_LDADD = $(LDADD)
+test_05_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_06_1_SOURCES = test_06-1.c
+test_06_1_OBJECTS = test_06-1.$(OBJEXT)
+test_06_1_LDADD = $(LDADD)
+test_06_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_06_2_SOURCES = test_06-2.c
+test_06_2_OBJECTS = test_06-2.$(OBJEXT)
+test_06_2_LDADD = $(LDADD)
+test_06_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_07_1_SOURCES = test_07-1.c
+test_07_1_OBJECTS = test_07-1.$(OBJEXT)
+test_07_1_LDADD = $(LDADD)
+test_07_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_07_2_SOURCES = test_07-2.c
+test_07_2_OBJECTS = test_07-2.$(OBJEXT)
+test_07_2_LDADD = $(LDADD)
+test_07_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_08_1_SOURCES = test_08-1.c
+test_08_1_OBJECTS = test_08-1.$(OBJEXT)
+test_08_1_LDADD = $(LDADD)
+test_08_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_09_1_SOURCES = test_09-1.c
+test_09_1_OBJECTS = test_09-1.$(OBJEXT)
+test_09_1_LDADD = $(LDADD)
+test_09_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_10_1_SOURCES = test_10-1.c
+test_10_1_OBJECTS = test_10-1.$(OBJEXT)
+test_10_1_LDADD = $(LDADD)
+test_10_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_11_1_SOURCES = test_11-1.c
+test_11_1_OBJECTS = test_11-1.$(OBJEXT)
+test_11_1_LDADD = $(LDADD)
+test_11_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_12_1_SOURCES = test_12-1.c
+test_12_1_OBJECTS = test_12-1.$(OBJEXT)
+test_12_1_LDADD = $(LDADD)
+test_12_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_12_2_SOURCES = test_12-2.c
+test_12_2_OBJECTS = test_12-2.$(OBJEXT)
+test_12_2_LDADD = $(LDADD)
+test_12_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_13_1_SOURCES = test_13-1.c
+test_13_1_OBJECTS = test_13-1.$(OBJEXT)
+test_13_1_LDADD = $(LDADD)
+test_13_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_14_1_SOURCES = test_14-1.c
+test_14_1_OBJECTS = test_14-1.$(OBJEXT)
+test_14_1_LDADD = $(LDADD)
+test_14_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_14_2_SOURCES = test_14-2.c
+test_14_2_OBJECTS = test_14-2.$(OBJEXT)
+test_14_2_LDADD = $(LDADD)
+test_14_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_15_1_SOURCES = test_15-1.c
+test_15_1_OBJECTS = test_15-1.$(OBJEXT)
+test_15_1_LDADD = $(LDADD)
+test_15_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_15_2_SOURCES = test_15-2.c
+test_15_2_OBJECTS = test_15-2.$(OBJEXT)
+test_15_2_LDADD = $(LDADD)
+test_15_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_16_1_SOURCES = test_16-1.c
+test_16_1_OBJECTS = test_16-1.$(OBJEXT)
+test_16_1_LDADD = $(LDADD)
+test_16_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_16_2_SOURCES = test_16-2.c
+test_16_2_OBJECTS = test_16-2.$(OBJEXT)
+test_16_2_LDADD = $(LDADD)
+test_16_2_DEPENDENCIES = ../libparse_delimited_text.la
+test_16_3_SOURCES = test_16-3.c
+test_16_3_OBJECTS = test_16-3.$(OBJEXT)
+test_16_3_LDADD = $(LDADD)
+test_16_3_DEPENDENCIES = ../libparse_delimited_text.la
+test_18_1_SOURCES = test_18-1.c
+test_18_1_OBJECTS = test_18-1.$(OBJEXT)
+test_18_1_LDADD = $(LDADD)
+test_18_1_DEPENDENCIES = ../libparse_delimited_text.la
+test_19_1_SOURCES = test_19-1.c
+test_19_1_OBJECTS = test_19-1.$(OBJEXT)
+test_19_1_LDADD = $(LDADD)
+test_19_1_DEPENDENCIES = ../libparse_delimited_text.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -95,9 +191,18 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = test_01-1.c test_01-2.c test_02-1.c test_02-2.c test_03-1.c \
-	test_03-2.c test_04-1.c test_04-2.c
+	test_03-2.c test_04-1.c test_04-2.c test_05-1.c test_05-2.c \
+	test_06-1.c test_06-2.c test_07-1.c test_07-2.c test_08-1.c \
+	test_09-1.c test_10-1.c test_11-1.c test_12-1.c test_12-2.c \
+	test_13-1.c test_14-1.c test_14-2.c test_15-1.c test_15-2.c \
+	test_16-1.c test_16-2.c test_16-3.c test_18-1.c test_19-1.c
 DIST_SOURCES = test_01-1.c test_01-2.c test_02-1.c test_02-2.c \
-	test_03-1.c test_03-2.c test_04-1.c test_04-2.c
+	test_03-1.c test_03-2.c test_04-1.c test_04-2.c test_05-1.c \
+	test_05-2.c test_06-1.c test_06-2.c test_07-1.c test_07-2.c \
+	test_08-1.c test_09-1.c test_10-1.c test_11-1.c test_12-1.c \
+	test_12-2.c test_13-1.c test_14-1.c test_14-2.c test_15-1.c \
+	test_15-2.c test_16-1.c test_16-2.c test_16-3.c test_18-1.c \
+	test_19-1.c
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
@@ -287,6 +392,72 @@ test_04-1$(EXEEXT): $(test_04_1_OBJECTS) $(test_04_1_DEPENDENCIES)
 test_04-2$(EXEEXT): $(test_04_2_OBJECTS) $(test_04_2_DEPENDENCIES) 
 	@rm -f test_04-2$(EXEEXT)
 	$(LINK) $(test_04_2_OBJECTS) $(test_04_2_LDADD) $(LIBS)
+test_05-1$(EXEEXT): $(test_05_1_OBJECTS) $(test_05_1_DEPENDENCIES) 
+	@rm -f test_05-1$(EXEEXT)
+	$(LINK) $(test_05_1_OBJECTS) $(test_05_1_LDADD) $(LIBS)
+test_05-2$(EXEEXT): $(test_05_2_OBJECTS) $(test_05_2_DEPENDENCIES) 
+	@rm -f test_05-2$(EXEEXT)
+	$(LINK) $(test_05_2_OBJECTS) $(test_05_2_LDADD) $(LIBS)
+test_06-1$(EXEEXT): $(test_06_1_OBJECTS) $(test_06_1_DEPENDENCIES) 
+	@rm -f test_06-1$(EXEEXT)
+	$(LINK) $(test_06_1_OBJECTS) $(test_06_1_LDADD) $(LIBS)
+test_06-2$(EXEEXT): $(test_06_2_OBJECTS) $(test_06_2_DEPENDENCIES) 
+	@rm -f test_06-2$(EXEEXT)
+	$(LINK) $(test_06_2_OBJECTS) $(test_06_2_LDADD) $(LIBS)
+test_07-1$(EXEEXT): $(test_07_1_OBJECTS) $(test_07_1_DEPENDENCIES) 
+	@rm -f test_07-1$(EXEEXT)
+	$(LINK) $(test_07_1_OBJECTS) $(test_07_1_LDADD) $(LIBS)
+test_07-2$(EXEEXT): $(test_07_2_OBJECTS) $(test_07_2_DEPENDENCIES) 
+	@rm -f test_07-2$(EXEEXT)
+	$(LINK) $(test_07_2_OBJECTS) $(test_07_2_LDADD) $(LIBS)
+test_08-1$(EXEEXT): $(test_08_1_OBJECTS) $(test_08_1_DEPENDENCIES) 
+	@rm -f test_08-1$(EXEEXT)
+	$(LINK) $(test_08_1_OBJECTS) $(test_08_1_LDADD) $(LIBS)
+test_09-1$(EXEEXT): $(test_09_1_OBJECTS) $(test_09_1_DEPENDENCIES) 
+	@rm -f test_09-1$(EXEEXT)
+	$(LINK) $(test_09_1_OBJECTS) $(test_09_1_LDADD) $(LIBS)
+test_10-1$(EXEEXT): $(test_10_1_OBJECTS) $(test_10_1_DEPENDENCIES) 
+	@rm -f test_10-1$(EXEEXT)
+	$(LINK) $(test_10_1_OBJECTS) $(test_10_1_LDADD) $(LIBS)
+test_11-1$(EXEEXT): $(test_11_1_OBJECTS) $(test_11_1_DEPENDENCIES) 
+	@rm -f test_11-1$(EXEEXT)
+	$(LINK) $(test_11_1_OBJECTS) $(test_11_1_LDADD) $(LIBS)
+test_12-1$(EXEEXT): $(test_12_1_OBJECTS) $(test_12_1_DEPENDENCIES) 
+	@rm -f test_12-1$(EXEEXT)
+	$(LINK) $(test_12_1_OBJECTS) $(test_12_1_LDADD) $(LIBS)
+test_12-2$(EXEEXT): $(test_12_2_OBJECTS) $(test_12_2_DEPENDENCIES) 
+	@rm -f test_12-2$(EXEEXT)
+	$(LINK) $(test_12_2_OBJECTS) $(test_12_2_LDADD) $(LIBS)
+test_13-1$(EXEEXT): $(test_13_1_OBJECTS) $(test_13_1_DEPENDENCIES) 
+	@rm -f test_13-1$(EXEEXT)
+	$(LINK) $(test_13_1_OBJECTS) $(test_13_1_LDADD) $(LIBS)
+test_14-1$(EXEEXT): $(test_14_1_OBJECTS) $(test_14_1_DEPENDENCIES) 
+	@rm -f test_14-1$(EXEEXT)
+	$(LINK) $(test_14_1_OBJECTS) $(test_14_1_LDADD) $(LIBS)
+test_14-2$(EXEEXT): $(test_14_2_OBJECTS) $(test_14_2_DEPENDENCIES) 
+	@rm -f test_14-2$(EXEEXT)
+	$(LINK) $(test_14_2_OBJECTS) $(test_14_2_LDADD) $(LIBS)
+test_15-1$(EXEEXT): $(test_15_1_OBJECTS) $(test_15_1_DEPENDENCIES) 
+	@rm -f test_15-1$(EXEEXT)
+	$(LINK) $(test_15_1_OBJECTS) $(test_15_1_LDADD) $(LIBS)
+test_15-2$(EXEEXT): $(test_15_2_OBJECTS) $(test_15_2_DEPENDENCIES) 
+	@rm -f test_15-2$(EXEEXT)
+	$(LINK) $(test_15_2_OBJECTS) $(test_15_2_LDADD) $(LIBS)
+test_16-1$(EXEEXT): $(test_16_1_OBJECTS) $(test_16_1_DEPENDENCIES) 
+	@rm -f test_16-1$(EXEEXT)
+	$(LINK) $(test_16_1_OBJECTS) $(test_16_1_LDADD) $(LIBS)
+test_16-2$(EXEEXT): $(test_16_2_OBJECTS) $(test_16_2_DEPENDENCIES) 
+	@rm -f test_16-2$(EXEEXT)
+	$(LINK) $(test_16_2_OBJECTS) $(test_16_2_LDADD) $(LIBS)
+test_16-3$(EXEEXT): $(test_16_3_OBJECTS) $(test_16_3_DEPENDENCIES) 
+	@rm -f test_16-3$(EXEEXT)
+	$(LINK) $(test_16_3_OBJECTS) $(test_16_3_LDADD) $(LIBS)
+test_18-1$(EXEEXT): $(test_18_1_OBJECTS) $(test_18_1_DEPENDENCIES) 
+	@rm -f test_18-1$(EXEEXT)
+	$(LINK) $(test_18_1_OBJECTS) $(test_18_1_LDADD) $(LIBS)
+test_19-1$(EXEEXT): $(test_19_1_OBJECTS) $(test_19_1_DEPENDENCIES) 
+	@rm -f test_19-1$(EXEEXT)
+	$(LINK) $(test_19_1_OBJECTS) $(test_19_1_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -302,6 +473,28 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_03-2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_04-1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_04-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_05-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_05-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_06-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_06-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_07-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_07-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_08-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_09-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_10-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_11-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_12-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_12-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_13-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_14-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_14-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_15-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_15-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_16-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_16-2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_16-3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_18-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_19-1.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

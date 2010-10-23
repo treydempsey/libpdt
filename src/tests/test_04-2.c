@@ -15,7 +15,7 @@ int main(int argc, char *argv[], char *envp[])
                      "who are privileged to live in Space."},
       {DELIM_ROW, 0, 1, NULL}, {DELIM_END, 0, 0, NULL} };
 
-  run_test("test_04-1", DELIM_STRICT, data, sizeof(data) - 1, results, ",", "\"");
+  run_test("test_04-2", DELIM_STRICT, data, sizeof(data) - 1, results, ",", "\"");
 
   return test_failed;
 }
