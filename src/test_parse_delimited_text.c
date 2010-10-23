@@ -10,7 +10,7 @@
 
 static Array *record;
 
-void field_callback(ParseDelimitedText *parser, String *parsed_field, size_t field_length)
+void field_callback(ParseDelimitedText *parser, String *parsed_field)
 {
   String *field;
   ArrayElement *element;
