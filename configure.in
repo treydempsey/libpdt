@@ -1,4 +1,4 @@
-AC_INIT(src/class_ParseDelimitedText.c)
+AC_INIT(src/class_ParseDelimitedText_i.c)
 AM_INIT_AUTOMAKE(libparse_delimited_text,0.0.1)
 AM_PROG_LIBTOOL
 AC_CONFIG_HEADERS(config.h)
