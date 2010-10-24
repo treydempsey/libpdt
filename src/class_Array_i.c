@@ -399,25 +399,20 @@ _Array_size_elements(Array *self)
 
 
 static Array *
-_Array_extend_elements(Array *self, int add_chunks)
+_Array_extend_elements(Array *self, int add)
 {
-  ArrayElement **more_elements;
+  ArrayElement **extended;
   int old_chunks;
 
   if(self != null_Array) {
-    old_chunks = self->chunks;
-    self->chunks += add_chunks;
-    /* TODO Use realloc() if we've got it */
-    more_elements = malloc(self->chunks * self->chunk_size * sizeof(ArrayElement *));
-    if(more_elements == NULL) {
+    extended = realloc(self->elements, (self->chunks + add) * sizeof(ArrayElement *));
+    if(extended == NULL) {
       goto error;
     }
-    free(self->elements);
-    memset(more_elements, 0, self->chunks * self->chunk_size * sizeof(ArrayElement *));
-    memcpy(more_elements, self->elements, old_chunks * self->chunk_size * sizeof(ArrayElement *));
-
-    self->elements = more_elements;
-
+    else {
+      self->chunks += add;
+      self->elements = extended;
+    }
     _Array_null_elements(self, self->length, _Array_size_elements(self) - 1);
 
   error:

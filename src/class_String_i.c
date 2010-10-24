@@ -314,6 +314,7 @@ static String *
 String_extend(String *self, size_t add)
 {
   size_t new_size;
+  char *extended;
 
   if(add < 1) {
     return self;
@@ -329,11 +330,14 @@ String_extend(String *self, size_t add)
       new_size = new_size * self->blk_size;
     }
 
-    self->string = realloc(self->string, new_size);
+    extended = realloc(self->string, new_size);
     if(self->string == NULL) {
-      perror("String_compare()\n");
+      perror("String_extend()\n");
     }
-    self->size = new_size;
+    else {
+      self->string = extended;
+      self->size = new_size;
+    }
   }
 
   return self;
