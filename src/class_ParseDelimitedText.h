@@ -55,8 +55,9 @@ typedef struct ParseDelimitedText {
 
   String *delimiter;
   String *quote;
-
   String *trailing_space;
+
+  void   *user_data;
 
   void   (*field_callback)(struct ParseDelimitedText *parser, String *field);
   void   (*record_callback)(struct ParseDelimitedText *parser, char eol);

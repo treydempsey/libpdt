@@ -1,4 +1,1 @@
-aclocal
-autoheader
-autoconf
-automake
+autoreconf -Im4
