@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = gnu
-SUBDIRS = src src/tests perl
+SUBDIRS = src src/tests
 ACLOCAL_AMFLAGS = -I m4
