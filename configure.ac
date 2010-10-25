@@ -6,8 +6,6 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   src/tests/Makefile
-  tools/Makefile
-  tools/validate_structure/Makefile
 ]) 
 
 AC_LANG_C
