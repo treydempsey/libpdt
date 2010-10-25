@@ -2,7 +2,13 @@ AC_INIT([src/class_ParseDelimitedText_i.c])
 AM_INIT_AUTOMAKE([libparse_delimited_text],[0.0.1])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_FILES([Makefile src/Makefile src/tests/Makefile]) 
+AC_CONFIG_FILES([
+  Makefile
+  src/Makefile
+  src/tests/Makefile
+  tools/Makefile
+  tools/validate_structure/Makefile
+]) 
 
 AC_LANG_C
 AC_PROG_CC
