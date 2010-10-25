@@ -19,6 +19,5 @@ AC_CHECK_FUNCS([malloc realloc],,AC_MSG_ERROR([
 required standard library function missing]))
 
 AC_PATH_PROG(PERL, perl)
-AC_CONFIG_FILES([perl/Makefile])
 
 AC_OUTPUT
