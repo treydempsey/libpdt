@@ -2677,7 +2677,7 @@ am__tar='${AMTAR} chof - "$$tardir"'; am__untar='${AMTAR} xf -'
 ac_config_headers="$ac_config_headers config.h"
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/tests/Makefile tools/Makefile tools/validate_structure/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/tests/Makefile"
 
 
 ac_ext=c
@@ -12423,8 +12423,6 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/tests/Makefile") CONFIG_FILES="$CONFIG_FILES src/tests/Makefile" ;;
-    "tools/Makefile") CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;
-    "tools/validate_structure/Makefile") CONFIG_FILES="$CONFIG_FILES tools/validate_structure/Makefile" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
 

@@ -42,10 +42,14 @@ class_String(void)
     String_methods.append = String_append;
     String_methods.append_cstr = String_append_cstr;
     String_methods.append_slice = String_append_slice;
+    String_methods.chomp = String_chomp;
     String_methods.compare = String_compare;
     String_methods.comparen = String_comparen;
     String_methods.dup = String_dup;
+    String_methods.eol = String_eol;
+    String_methods.each_line = String_each_line;
     String_methods.extend = String_extend;
+    String_methods.ltrim = String_ltrim;
     String_methods.slice = String_slice;
     String_methods.truncate = String_truncate;
 
@@ -119,6 +123,8 @@ String_init(String *self, char *cstr, size_t size, size_t length)
   self->position = 0;
   self->blk_size = 0;
 
+  self->_line = null_String;
+
   if(length > size) {
     self->m->extend(self, (length - size) + 1);
   }
@@ -132,6 +138,9 @@ static String *
 String_free(String *self)
 {
   if(self != null_String) {
+    if(self->_line != null_String) {
+      self->_line = self->_line->m->free(self->_line);
+    }
     free(self->string);
     free(self->handle);
     free(self);
@@ -253,7 +262,7 @@ String_append_slice(String *self, String *other, size_t slice_length)
     }
 
     new_size = self->length + append_length;
-    if(new_size > self->size) {
+    if(new_size >= self->size) {
       self->m->extend(self, (new_size - self->size) + 1);
     }
 
@@ -263,6 +272,26 @@ String_append_slice(String *self, String *other, size_t slice_length)
   }
 
   return self;
+}
+
+
+static size_t
+String_chomp(String *self)
+{
+  size_t chomped = 0;
+  size_t eol_chars = 0;
+
+  if(self != null_String && self->length > 0) {
+    eol_chars = self->m->eol(self);
+    while(eol_chars > 0 && self->length > 0) {
+      self->length--;
+      *(self->string + self->length) = '\x00';
+      eol_chars--;
+      chomped++;
+    }
+  }
+
+  return chomped;
 }
 
 
@@ -311,6 +340,82 @@ String_dup(String *self)
 
 
 static String *
+String_each_line(String *self)
+{
+  size_t cur_position;
+
+  if(self != null_String) {
+    if(self->_line == null_String) {
+      self->_line = new_String("", 1024, 0);
+      self->_line->blk_size = 1024;
+    }
+
+    if(self->position >= self->length) {
+      self->_line->m->truncate(self->_line);
+      self->position = 0;
+      return null_String;
+    }
+
+    cur_position = self->position;
+    while(cur_position < self->length) {
+      /* CR */
+      if(*(self->string + cur_position) == '\x0d') {
+        /* CR+LF */
+        if((cur_position + 1) < self->length && *(self->string + cur_position + 1) == '\x0a') {
+          cur_position++;
+        }
+        break;
+      }
+      /* LF */
+      if(*(self->string + cur_position) == '\x0a') {
+        break;
+      }
+
+      cur_position++;
+    }
+
+    cur_position++;
+    self->_line->m->slice(self->_line, self, cur_position - self->position);
+    self->position = cur_position;
+
+    return self->_line;
+  }
+  else {
+    return self;
+  }
+}
+
+
+static size_t
+String_eol(String *self)
+{
+  size_t eol_chars = 0;
+  size_t offset = 0;
+
+  if(self != null_String && self->length > 0) {
+    offset = self->length;
+    offset--;
+
+    /* CR */
+    if(*(self->string + offset) == '\x0d') {
+      eol_chars++;
+
+      /* CR+LF */
+      if(*(self->string + offset) == '\x0d') {
+        eol_chars++;
+      }
+    }
+    /* LF */
+    else if(*(self->string + offset) == '\x0a') {
+      eol_chars++;
+    }
+  }
+
+  return eol_chars;
+}
+
+
+static String *
 String_extend(String *self, size_t add)
 {
   size_t new_size;
@@ -345,6 +450,31 @@ String_extend(String *self, size_t add)
 
 
 static String *
+String_ltrim(String *self)
+{
+  size_t ws_chars = 0;
+  size_t offset = 0;
+
+  if(self != null_String && self->length > 0) {
+    offset = self->length;
+    offset--;
+
+    while(offset >= 0
+          && (*(self->string + offset) == '\x20'
+              || *(self->string + offset) == '\x09'
+              || *(self->string + offset) == '\x0b'
+             )) {
+      *(self->string + offset) = '\x00';
+      self->length--;
+      offset--;
+    }
+  }
+
+  return self;
+}
+
+
+static String *
 String_slice(String *self, String *other, size_t slice_length)
 {
   if(self != null_String) {
@@ -362,7 +492,7 @@ String_truncate(String *self)
   if(self != null_String) {
     self->length = 0;
     self->position = 0;
-    *(self->string) = '\0';
+    *(self->string) = '\x00';
   }
 
   return self;
