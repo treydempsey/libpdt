@@ -33,30 +33,35 @@ class_String(void)
 {
   if(null_String == NULL) {
     /* Methods */
-    String_methods.init = String_init;
-    String_methods.free = String_free;
+    String_methods.init         = String_init;
+    String_methods.free         = String_free;
 
-    String_methods.blk_size = String_blk_size;
     String_methods.set_blk_size = String_set_blk_size;
 
-    String_methods.append = String_append;
-    String_methods.append_cstr = String_append_cstr;
+    String_methods.append       = String_append;
+    String_methods.append_cstr  = String_append_cstr;
     String_methods.append_slice = String_append_slice;
-    String_methods.chomp = String_chomp;
-    String_methods.compare = String_compare;
-    String_methods.comparen = String_comparen;
-    String_methods.dup = String_dup;
-    String_methods.eol = String_eol;
-    String_methods.each_line = String_each_line;
-    String_methods.extend = String_extend;
-    String_methods.ltrim = String_ltrim;
-    String_methods.slice = String_slice;
-    String_methods.truncate = String_truncate;
+    String_methods.chomp        = String_chomp;
+    String_methods.compare      = String_compare;
+    String_methods.compare_cstr = String_compare_cstr;
+    String_methods.comparen     = String_comparen;
+    String_methods.dup          = String_dup;
+    String_methods.downcase     = String_downcase;
+    String_methods.eol          = String_eol;
+    String_methods.each_line    = String_each_line;
+    String_methods.extend       = String_extend;
+    String_methods.hex_to_byte  = String_hex_to_byte;
+    String_methods.ishex        = String_ishex;
+    String_methods.ltrim        = String_ltrim;
+    String_methods.slice        = String_slice;
+    String_methods.to_i         = String_to_i;
+    String_methods.truncate     = String_truncate;
+    String_methods.upcase       = String_upcase;
 
     /* Null String Instance */
-    null_String = &_null_String;
-    null_String->handle = &null_String;
-    null_String->m = &String_methods;
+    null_String                 = &_null_String;
+    null_String->handle         = &null_String;
+    null_String->m              = &String_methods;
     String_init(null_String, NULL, 0, 0);
   }
 
@@ -65,9 +70,9 @@ class_String(void)
 
 
 String *
-new_String(char *cstr, size_t size, size_t length)
+new_String(char * cstr, size_t size, size_t length)
 {
-  String *self;
+  String * self;
 
   self = alloc_String(size);
   self->m->init(self, cstr, size, length);
@@ -79,7 +84,7 @@ new_String(char *cstr, size_t size, size_t length)
 String *
 alloc_String(size_t size)
 {
-  String **handle;
+  String ** handle;
 
   /* Allocate */
   handle = malloc(sizeof(String *));
@@ -115,7 +120,7 @@ error:
 
 
 static String *
-String_init(String *self, char *cstr, size_t size, size_t length)
+String_init(String * self, char * cstr, size_t size, size_t length)
 {
   /* Variables */
   self->size = size;
@@ -152,15 +157,9 @@ String_free(String *self)
 
 /* Properties
  ************/
-static size_t
-String_blk_size(String *self)
-{
-  return self->blk_size;
-}
-
 
 static String *
-String_set_blk_size(String *self, size_t new_blk_size)
+String_set_blk_size(String * self, size_t new_blk_size)
 {
   if(self != null_String) {
     self->blk_size = new_blk_size;
@@ -175,7 +174,7 @@ String_set_blk_size(String *self, size_t new_blk_size)
  *************************/
 
 static String *
-String_append(String *self, String *other)
+String_append(String * self, String * other)
 {
   size_t new_size;
   size_t append_length;
@@ -213,7 +212,7 @@ String_append(String *self, String *other)
 
 
 static String *
-String_append_cstr(String *self, char *cstr, size_t append_length)
+String_append_cstr(String * self, char * cstr, size_t append_length)
 {
   size_t new_size;
   size_t cpy_size;
@@ -238,7 +237,7 @@ String_append_cstr(String *self, char *cstr, size_t append_length)
 
 
 static String *
-String_append_slice(String *self, String *other, size_t slice_length)
+String_append_slice(String * self, String * other, size_t slice_length)
 {
   size_t new_size;
   size_t append_length;
@@ -276,7 +275,7 @@ String_append_slice(String *self, String *other, size_t slice_length)
 
 
 static size_t
-String_chomp(String *self)
+String_chomp(String * self)
 {
   size_t chomped = 0;
   size_t eol_chars = 0;
@@ -285,7 +284,7 @@ String_chomp(String *self)
     eol_chars = self->m->eol(self);
     while(eol_chars > 0 && self->length > 0) {
       self->length--;
-      *(self->string + self->length) = '\x00';
+      *(self->string + self->length) = '\0';
       eol_chars--;
       chomped++;
     }
@@ -296,20 +295,20 @@ String_chomp(String *self)
 
 
 static int
-String_compare(String *self, String *other)
+String_compare(String * self, String * other)
 {
   size_t compare_length;
   int r = 0;
 
   if(self != null_String) {
-    compare_length = (self->length < other->length) ? self->length : other->length;
-    r = self->m->comparen(self, other, compare_length);
+    compare_length = ((self->length - self->position) < (other->length - self->position)) ? self->length - self->position : other->length - other->position;
+    r = strncmp(self->string + self->position, other->string + other->position, compare_length);
 
     if(r == 0) {
-      if(self->length > other->length) {
+      if((self->length - self->position) > (other->length - other->position)) {
         r = 1;
       }
-      else if(self->length < other->length) {
+      else if((self->length - self->position) < (other->length - other->position)) {
         r = -1;
       }
     }
@@ -320,12 +319,39 @@ String_compare(String *self, String *other)
 
 
 static int
-String_comparen(String *self, String *other, size_t compare_length)
+String_compare_cstr(String * self, char * other, size_t other_length)
 {
+  size_t compare_length;
   int r = 0;
 
   if(self != null_String) {
-    r = strncmp(self->string + self->position, other->string + other->position, compare_length);
+    compare_length = ((self->length - self->position) < other_length) ? self->length - self->position : other_length;
+    r = strncmp(self->string + self->position, other, compare_length);
+
+    if(r == 0) {
+      if((self->length - self->position) > other_length) {
+        r = 1;
+      }
+      else if((self->length - self->position) < other_length) {
+        r = -1;
+      }
+    }
+  }
+
+  return r;
+}
+
+
+static int
+String_comparen(String * self, String * other, size_t compare_length)
+{
+  int r = 0;
+  size_t safe_compare_length;
+
+  if(self != null_String) {
+    safe_compare_length = ((self->length - self->position) < (other->length - other->position)) ? self->length - self->position : other->length - other->position;
+    safe_compare_length = (safe_compare_length < compare_length) ? safe_compare_length : compare_length;
+    r = strncmp(self->string + self->position, other->string + other->position, safe_compare_length);
   }
 
   return r;
@@ -333,9 +359,24 @@ String_comparen(String *self, String *other, size_t compare_length)
 
 
 static String *
-String_dup(String *self)
+String_dup(String * self)
 {
   return new_String(self->string, self->size, self->length);
+}
+
+
+static String *
+String_downcase(String * self)
+{
+  size_t i;
+
+  if(self != null_String) {
+    for(i = 0; i < self->length; i++) {
+      *(self->string + i) = tolower(*(self->string + i));
+    }
+  }
+
+  return self;
 }
 
 
@@ -387,7 +428,7 @@ String_each_line(String *self)
 
 
 static size_t
-String_eol(String *self)
+String_eol(String * self)
 {
   size_t eol_chars = 0;
   size_t offset = 0;
@@ -416,10 +457,10 @@ String_eol(String *self)
 
 
 static String *
-String_extend(String *self, size_t add)
+String_extend(String * self, size_t add)
 {
   size_t new_size;
-  char *extended;
+  char * extended;
 
   if(add < 1) {
     return self;
@@ -449,10 +490,59 @@ String_extend(String *self, size_t add)
 }
 
 
-static String *
-String_ltrim(String *self)
+static unsigned char
+String_hex_to_byte(String * self)
 {
-  size_t ws_chars = 0;
+  unsigned long lbyte = 0;
+  unsigned char cbyte = 0;
+  char **       endval = NULL;
+
+  if(self != null_String) {
+    if(self->length - self->position >= 4) {
+      lbyte = strtoul(self->string + self->position, endval, 16);
+      if(endval == '\0') {
+        cbyte = (unsigned char)(lbyte & 0xff);
+      }
+      else {
+        fprintf(stderr, "ERROR: Error String_hex_to_byte could not convert string to byte\n");
+      }
+    }
+  }
+
+  return cbyte;
+}
+
+
+static int
+String_ishex(String * self)
+{
+  int     r = 0;
+  char *  cstr;
+
+  if(self != null_String) {
+    cstr = self->string + self->position;
+    if((self->length - self->position) >= 4
+       && *cstr == '0'
+       && (*(cstr + 1) == 'x' || *(cstr + 1) == 'X')
+       && (   (*(cstr + 2) >= '0' && *(cstr + 2) <= '9')
+           || (*(cstr + 2) >= 'a' && *(cstr + 2) <= 'f')
+           || (*(cstr + 2) >= 'A' && *(cstr + 2) <= 'F')
+          )
+       && (   (*(cstr + 3) >= '0' && *(cstr + 3) <= '9')
+           || (*(cstr + 3) >= 'a' && *(cstr + 3) <= 'f')
+           || (*(cstr + 3) >= 'A' && *(cstr + 3) <= 'F')
+          )) {
+      r = 1;
+    }
+  }
+
+  return r;
+}
+
+
+static String *
+String_ltrim(String * self)
+{
   size_t offset = 0;
 
   if(self != null_String && self->length > 0) {
@@ -464,7 +554,7 @@ String_ltrim(String *self)
               || *(self->string + offset) == '\x09'
               || *(self->string + offset) == '\x0b'
              )) {
-      *(self->string + offset) = '\x00';
+      *(self->string + offset) = '\0';
       self->length--;
       offset--;
     }
@@ -475,7 +565,7 @@ String_ltrim(String *self)
 
 
 static String *
-String_slice(String *self, String *other, size_t slice_length)
+String_slice(String * self, String * other, size_t slice_length)
 {
   if(self != null_String) {
     self->m->truncate(self);
@@ -486,13 +576,51 @@ String_slice(String *self, String *other, size_t slice_length)
 }
 
 
+static int
+String_to_i(String * self)
+{
+  long    l;
+  int     i = 0;
+  char ** endval = NULL;
+
+  if(self != null_String) {
+    if(self->position > self->length) {
+      l = strtol(self->string + self->position, endval, 10);
+      if(endval == '\0') {
+        i = (int)l;
+      }
+      else {
+        fprintf(stderr, "ERROR: Error String_to_i could not convert string to integer\n");
+      }
+    }
+  }
+
+  return i;
+}
+
+
 static String *
-String_truncate(String *self)
+String_truncate(String * self)
 {
   if(self != null_String) {
     self->length = 0;
     self->position = 0;
-    *(self->string) = '\x00';
+    *(self->string) = '\0';
+  }
+
+  return self;
+}
+
+
+static String *
+String_upcase(String * self)
+{
+  size_t i;
+
+  if(self != null_String) {
+    for(i = 0; i < self->length; i++) {
+      *(self->string + i) = toupper(*(self->string + i));
+    }
   }
 
   return self;
