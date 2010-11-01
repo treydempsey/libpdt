@@ -36,26 +36,28 @@ class_Array(void)
 
   if(null_Array == NULL) {
     /* Methods */
-    Array_methods.init = Array_init;
-    Array_methods.free = Array_free;
+    Array_methods.init            = Array_init;
+    Array_methods.free            = Array_free;
 
-    Array_methods.append = Array_append;
-    Array_methods.compare = Array_compare;
-    Array_methods.concat = Array_concat;
-    Array_methods.difference = Array_difference;
-    Array_methods.dup = Array_dup;
-    Array_methods.each = Array_each;
-    Array_methods.get = Array_get;
-    Array_methods.include = Array_include;
-    Array_methods.intersection = Array_intersection;
-    Array_methods.reset_each = Array_reset_each;
-    Array_methods.repetition = Array_repetition;
-    Array_methods.set = Array_set;
+    Array_methods.append          = Array_append;
+    Array_methods.append_element  = Array_append_element;
+    Array_methods.compare         = Array_compare;
+    Array_methods.concat          = Array_concat;
+    Array_methods.difference      = Array_difference;
+    Array_methods.dup             = Array_dup;
+    Array_methods.each            = Array_each;
+    Array_methods.get             = Array_get;
+    Array_methods.include         = Array_include;
+    Array_methods.intersection    = Array_intersection;
+    Array_methods.last            = Array_last;
+    Array_methods.reset_each      = Array_reset_each;
+    Array_methods.repetition      = Array_repetition;
+    Array_methods.set             = Array_set;
 
     /* Special vars */
-    null_Array = &_null_Array;
-    null_Array->handle = &null_Array;
-    null_Array->m = &Array_methods;
+    null_Array                    = &_null_Array;
+    null_Array->handle            = &null_Array;
+    null_Array->m                 = &Array_methods;
     Array_init(null_Array);
   }
 
@@ -64,9 +66,9 @@ class_Array(void)
 
 
 Array *
-new_Array()
+new_Array(void)
 {
-  Array *self;
+  Array * self;
 
   self = alloc_Array();
   self->m->init(self);
@@ -78,7 +80,7 @@ new_Array()
 Array *
 alloc_Array(void)
 {
-  Array **handle;
+  Array ** handle;
 
   /* Allocate */
   handle = malloc(sizeof(Array *));
@@ -108,7 +110,7 @@ error:
 
 
 static Array *
-Array_init(Array *self)
+Array_init(Array * self)
 {
   /* Variables */
   self->current_element = null_ArrayElement;
@@ -143,7 +145,7 @@ error:
 
 
 static Array *
-Array_free(Array *self)
+Array_free(Array * self)
 {
   int i;
 
@@ -165,7 +167,27 @@ Array_free(Array *self)
  *************************/
 
 static Array *
-Array_append(Array *self, ArrayElement *element)
+Array_append(Array * self, void * data)
+{
+  ArrayElement * new_element;
+
+  if(self != null_Array) {
+    if((self->length + 1) >= _Array_size_elements(self)) {
+      _Array_extend_elements(self, 1);
+    }
+
+    new_element = new_ArrayElement(data);
+
+    self->elements[self->length] = new_element;
+    self->length++;
+  }
+
+  return self;
+}
+
+
+static Array *
+Array_append_element(Array * self, ArrayElement * element)
 {
   if(self != null_Array) {
     if((self->length + 1) >= _Array_size_elements(self)) {
@@ -181,7 +203,7 @@ Array_append(Array *self, ArrayElement *element)
 
 
 static int
-Array_compare(Array *self, Array *other)
+Array_compare(Array * self, Array * other)
 {
   /* TODO Complete */
   return (self == other) ? 1 : 0;
@@ -189,9 +211,9 @@ Array_compare(Array *self, Array *other)
 
 
 static Array *
-Array_concat(Array *self, Array *other)
+Array_concat(Array * self, Array * other)
 {
-  Array *new_array;
+  Array * new_array;
 
   if(self != null_Array) {
     new_array = self->m->dup(self);
@@ -210,9 +232,9 @@ Array_concat(Array *self, Array *other)
 
 
 static Array *
-Array_difference(Array *self, Array *other)
+Array_difference(Array * self, Array * other)
 {
-  Array *new_array;
+  Array * new_array;
 
   if(self != null_Array) {
     new_array = new_Array();
@@ -233,11 +255,11 @@ Array_difference(Array *self, Array *other)
 
 
 static Array *
-Array_dup(Array *self)
+Array_dup(Array * self)
 {
-  Array *new_array;
-  new_array = new_Array();
+  Array * new_array;
 
+  new_array = new_Array();
   if(self != null_Array) {
     self->m->reset_each(self);
     while(self->m->each(self) != null_ArrayElement) {
@@ -253,7 +275,7 @@ Array_dup(Array *self)
 
 
 static ArrayElement *
-Array_each(Array *self)
+Array_each(Array * self)
 {
   if(self != null_Array) {
     if(self->current_index >= self->length) {
@@ -264,14 +286,18 @@ Array_each(Array *self)
       self->current_index++;
       self->current_element = self->elements[self->current_index];
     }
+
+    return self->current_element;
+  }
+  else {
+    return null_ArrayElement;
   }
 
-  return self->current_element;
 }
 
 
 static ArrayElement *
-Array_get(Array *self, size_t index)
+Array_get(Array * self, size_t index)
 {
   if(self != null_Array) {
     return self->elements[index];
@@ -283,7 +309,7 @@ Array_get(Array *self, size_t index)
 
 
 static ArrayElement *
-Array_include(Array *self, ArrayElement *element)
+Array_include(Array * self, ArrayElement * element)
 {
   if(self != null_Array) {
     self->m->reset_each(self);
@@ -298,8 +324,21 @@ Array_include(Array *self, ArrayElement *element)
 }
 
 
+static ArrayElement *
+Array_last(Array * self)
+{
+  ArrayElement * last = null_ArrayElement;
+
+  if(self != null_Array && self->length > 0) {
+    last = self->elements[self->length - 1];
+  }
+
+  return last;
+}
+
+
 static Array *
-Array_reset_each(Array *self)
+Array_reset_each(Array * self)
 {
   if(self != null_Array) {
     self->current_element = null_ArrayElement;
@@ -311,9 +350,9 @@ Array_reset_each(Array *self)
 
 
 static Array *
-Array_intersection(Array *self, Array *other)
+Array_intersection(Array * self, Array * other)
 {
-  Array *new_array;
+  Array * new_array;
 
   if(self != null_Array) {
     new_array = new_Array();
@@ -334,10 +373,10 @@ Array_intersection(Array *self, Array *other)
 
 
 static Array *
-Array_repetition(Array *self, int times)
+Array_repetition(Array * self, int times)
 {
-  Array *new_array;
-  ArrayElement *element;
+  Array * new_array;
+  ArrayElement * element;
   int i, new_length;
 
   if(self != null_Array) {
@@ -362,7 +401,7 @@ Array_repetition(Array *self, int times)
 
 
 static Array *
-Array_set(Array *self, size_t index, ArrayElement *element)
+Array_set(Array * self, size_t index, ArrayElement * element)
 {
   int chunks;
 
@@ -392,17 +431,16 @@ Array_set(Array *self, size_t index, ArrayElement *element)
  *****************/
 
 static inline size_t
-_Array_size_elements(Array *self)
+_Array_size_elements(Array * self)
 {
   return self->chunks * self->chunk_size;
 }
 
 
 static Array *
-_Array_extend_elements(Array *self, int add)
+_Array_extend_elements(Array * self, int add)
 {
-  ArrayElement **extended;
-  int old_chunks;
+  ArrayElement ** extended;
 
   if(self != null_Array) {
     extended = realloc(self->elements, (self->chunks + add) * sizeof(ArrayElement *));
@@ -427,7 +465,7 @@ _Array_extend_elements(Array *self, int add)
 
 
 static Array *
-_Array_null_elements(Array *self, size_t start, size_t end)
+_Array_null_elements(Array * self, size_t start, size_t end)
 {
   int i, j;
 

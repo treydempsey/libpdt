@@ -62,7 +62,8 @@ class_String(void)
     null_String                 = &_null_String;
     null_String->handle         = &null_String;
     null_String->m              = &String_methods;
-    String_init(null_String, NULL, 0, 0);
+    null_String->string         = malloc(sizeof(char));
+    String_init(null_String, "", 1, 0);
   }
 
   return 1;

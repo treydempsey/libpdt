@@ -51,9 +51,9 @@ class_ArrayElement(void)
 
 
 ArrayElement *
-new_ArrayElement(void *data)
+new_ArrayElement(void * data)
 {
-  ArrayElement *self;
+  ArrayElement * self;
 
   self = alloc_ArrayElement();
   self->m->init(self, data);
@@ -65,7 +65,7 @@ new_ArrayElement(void *data)
 ArrayElement *
 alloc_ArrayElement(void)
 {
-  ArrayElement **handle;
+  ArrayElement ** handle;
 
   /* Allocate */
   handle = malloc(sizeof(ArrayElement *));
@@ -95,7 +95,7 @@ error:
 
 
 static ArrayElement *
-ArrayElement_init(ArrayElement *self, void *data)
+ArrayElement_init(ArrayElement * self, void * data)
 {
   /* Variables */
   self->data = data;
@@ -105,9 +105,12 @@ ArrayElement_init(ArrayElement *self, void *data)
 
 
 static ArrayElement *
-ArrayElement_free(ArrayElement *self)
+ArrayElement_free(ArrayElement * self)
 {
   if(self != null_ArrayElement) {
+    if(self->data != NULL) {
+      fprintf(stderr, "ERROR: ArrayElement_free data not freed\n");
+    }
     free(self->handle);
     free(self);
   }
@@ -121,16 +124,16 @@ ArrayElement_free(ArrayElement *self)
  *************************/
 
 static int
-ArrayElement_compare(ArrayElement *self, ArrayElement *other)
+ArrayElement_compare(ArrayElement * self, ArrayElement * other)
 {
   return (self->data == other->data);
 }
 
 
 static ArrayElement *
-ArrayElement_dup(ArrayElement *self)
+ArrayElement_dup(ArrayElement * self)
 {
-  ArrayElement *new_array_element;
+  ArrayElement * new_array_element;
 
   new_array_element = new_ArrayElement(self->data);
 
