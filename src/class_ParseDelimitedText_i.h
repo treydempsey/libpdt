@@ -55,6 +55,7 @@ static int                  debug(const char *format, ...);
 
 /* Global Variables */
 ParseDelimitedText        *null_ParseDelimitedText = NULL;
+
 static ParseDelimitedText _null_ParseDelimitedText;
 static ParseDelimitedTextMethods ParseDelimitedText_methods;
 

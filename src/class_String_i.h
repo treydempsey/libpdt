@@ -53,20 +53,25 @@ static String *       String_dup(String * self);
 static String *       String_downcase(String * self);
 static String *       String_each_line(String * self);
 static size_t         String_eol(String * self);
+static String *       String_extend(String * self, size_t add);
 static unsigned char  String_hex_to_byte(String * self);
 static int            String_ishex(String * self);
 static String *       String_ltrim(String * self);
-static String *       String_extend(String * self, size_t add);
+static String *       String_rtrim(String * self);
 static String *       String_slice(String * self, String * other, size_t slice_length);
+static Array *        String_split(String * self, String * delimiter);
 static int            String_to_i(String * self);
 static String *       String_truncate(String * self);
 static String *       String_upcase(String * self);
 
 /* Private Methods */
+static void           _String_Array_free(void *);
 
 /* Global Variables */
 String *              null_String = NULL;
-String                _null_String;
-StringMethods         String_methods;
+
+static String         _null_String;
+static char           _null_String_string[] = "\0";
+static StringMethods  String_methods;
 
 #endif /* not _CLASS_STRING_I_H_ */

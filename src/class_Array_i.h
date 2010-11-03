@@ -58,7 +58,8 @@ inline static size_t  _Array_size_elements(Array * self);
 
 /* Global Variables */
 Array *               null_Array = NULL;
-Array                 _null_Array;
-ArrayMethods          Array_methods;
+
+static Array          _null_Array;
+static ArrayMethods   Array_methods;
 
 #endif /* not _CLASS_ARRAY_I_H_ */

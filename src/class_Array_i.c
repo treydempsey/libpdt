@@ -150,6 +150,13 @@ Array_free(Array * self)
   int i;
 
   if(self != null_Array) {
+    if(self->auto_free != NULL) {
+      for(i = 0; i < self->length; i++) {
+        self->auto_free(self->elements[i]->data);
+        self->elements[i]->data = NULL;
+      }
+    }
+
     for(i = 0; i < self->length; i++) {
       self->elements[i]->m->free(self->elements[i]);
     }

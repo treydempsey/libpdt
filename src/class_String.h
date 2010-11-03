@@ -24,6 +24,9 @@
 #ifndef _CLASS_STRING_H_
 #define _CLASS_STRING_H_
 
+/* Dependencies */
+#include <class_Array.h>
+
 /* Class Instance */
 typedef struct String {
   struct String **        handle;
@@ -63,7 +66,9 @@ typedef struct StringMethods {
   unsigned char (*hex_to_byte)(String * self);
   int           (*ishex)(String * self);
   String *      (*ltrim)(String * self);
+  String *      (*rtrim)(String * self);
   String *      (*slice)(String * self, String * other, size_t slice_length);
+  Array *       (*split)(String * self, String * delimiter);
   int           (*to_i)(String * self);
   String *      (*truncate)(String * self);
   String *      (*upcase)(String * self);

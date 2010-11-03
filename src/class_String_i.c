@@ -32,6 +32,9 @@ int
 class_String(void)
 {
   if(null_String == NULL) {
+    /* Dependencies */
+    class_Array();
+
     /* Methods */
     String_methods.init         = String_init;
     String_methods.free         = String_free;
@@ -53,7 +56,9 @@ class_String(void)
     String_methods.hex_to_byte  = String_hex_to_byte;
     String_methods.ishex        = String_ishex;
     String_methods.ltrim        = String_ltrim;
+    String_methods.rtrim        = String_rtrim;
     String_methods.slice        = String_slice;
+    String_methods.split        = String_split;
     String_methods.to_i         = String_to_i;
     String_methods.truncate     = String_truncate;
     String_methods.upcase       = String_upcase;
@@ -62,7 +67,7 @@ class_String(void)
     null_String                 = &_null_String;
     null_String->handle         = &null_String;
     null_String->m              = &String_methods;
-    null_String->string         = malloc(sizeof(char));
+    null_String->string         = _null_String_string;
     String_init(null_String, "", 1, 0);
   }
 
@@ -134,7 +139,8 @@ String_init(String * self, char * cstr, size_t size, size_t length)
   if(length > size) {
     self->m->extend(self, (length - size) + 1);
   }
-  strncpy(self->string, cstr, self->size);
+  strncpy(self->string, cstr, self->length);
+  *(self->string + self->length) = '\0';
 
   return self;
 }
@@ -566,6 +572,39 @@ String_ltrim(String * self)
 
 
 static String *
+String_rtrim(String * self)
+{
+  size_t ws = 0;
+
+  if(self != null_String && self->length > 0) {
+
+    self->position = 0;
+    while(ws < self->length
+          && (   *(self->string + self->position) == '\x20'
+              || *(self->string + self->position) == '\x09'
+              || *(self->string + self->position) == '\x0b'
+             )
+         ) {
+      self->position++;
+      ws++;
+    }
+
+    if(ws > 0) {
+      self->position = 0;
+      while(self->position < (self->length - ws)) {
+        *(self->string + self->position) = *(self->string + self->position + ws);
+        self->position++;
+      }
+      self->length = self->length - ws;
+      *(self->string + self->length) = '\0';
+    }
+  }
+
+  return self;
+}
+
+
+static String *
 String_slice(String * self, String * other, size_t slice_length)
 {
   if(self != null_String) {
@@ -574,6 +613,71 @@ String_slice(String * self, String * other, size_t slice_length)
   }
 
   return self;
+}
+
+
+static Array *
+String_split(String * self, String * delimiter)
+{
+  Array *   r = null_Array;
+  String *  e;
+  size_t    self_position;
+  size_t    start_mark;
+  size_t    end_mark;
+  
+  if(self != null_String) {
+    self->position = 0;
+    delimiter->position = 0;
+    start_mark = 0;
+    end_mark = 0;
+
+    while(self->position < self->length) {
+      if(*(self->string + self->position) == *(delimiter->string + delimiter->position)) {
+
+        if(delimiter->position == 0) {
+          end_mark = self->position - 1;
+        }
+
+        if(delimiter->position == (delimiter->length - 1)) {
+          delimiter->position = 0;
+          if(r == null_Array) {
+            r = new_Array();
+            r->auto_free = _String_Array_free;
+          }
+
+          self_position = self->position;
+          self->position = start_mark;
+          e = new_String(self->string + start_mark, (self_position - start_mark) + 1, self_position - start_mark);
+          r->m->append(r, e);
+
+          delimiter->position = 0;
+          self->position = self_position;
+          start_mark = self->position + 1;
+        }
+
+        self->position++;
+      }
+      else if(delimiter->position > 0
+              && *(self->string + self->position) != *(delimiter->string + delimiter->position)) {
+        delimiter->position = 0;
+      }
+      else {
+        self->position++;
+      }
+    }
+
+    if(r == null_Array) {
+      r = new_Array();
+      r->auto_free = _String_Array_free;
+    }
+
+    self_position = self->position;
+    self->position = start_mark;
+    e = new_String(self->string + start_mark, (self_position - start_mark) + 1, self_position - start_mark);
+    r->m->append(r, e);
+  }
+
+  return r;
 }
 
 
@@ -625,4 +729,18 @@ String_upcase(String * self)
   }
 
   return self;
+}
+
+
+/*
+ * Private Instance Methods
+ **************************/
+
+static void
+_String_Array_free(void *data)
+{
+  String *s;
+
+  s = (String *)data;
+  s->m->free(s);
 }

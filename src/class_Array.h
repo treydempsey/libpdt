@@ -39,6 +39,8 @@ typedef struct Array {
   size_t                  chunk_size;
   size_t                  chunks;
 
+  void                    (*auto_free)(void *data);
+
   /* Instance Methods */
   struct ArrayMethods *   m;
 } Array;
