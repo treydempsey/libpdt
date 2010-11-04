@@ -612,9 +612,9 @@ ac_includes_default="\
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+LIBOBJS
 TGCL_LIBS
 TGCL_CFLAGS
-LIBOBJS
 OTOOL64
 OTOOL
 LIPO
@@ -11336,98 +11336,6 @@ $as_echo "no" >&6; }
   SET_MAKE="MAKE=${MAKE-make}"
 fi
 
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_RANLIB+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$RANLIB"; then
-  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-RANLIB=$ac_cv_prog_RANLIB
-if test -n "$RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $RANLIB" >&5
-$as_echo "$RANLIB" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_prog_RANLIB"; then
-  ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_RANLIB+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_RANLIB"; then
-  ac_cv_prog_ac_ct_RANLIB="$ac_ct_RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_RANLIB=$ac_cv_prog_ac_ct_RANLIB
-if test -n "$ac_ct_RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_RANLIB" >&5
-$as_echo "$ac_ct_RANLIB" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_ct_RANLIB" = x; then
-    RANLIB=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    RANLIB=$ac_ct_RANLIB
-  fi
-else
-  RANLIB="$ac_cv_prog_RANLIB"
-fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
@@ -11553,6 +11461,93 @@ _ACEOF
 fi
 
 done
+
+
+
+# Check whether --with-tgcl-include-dir was given.
+if test "${with_tgcl_include_dir+set}" = set; then :
+  withval=$with_tgcl_include_dir; TGCL_CFLAGS="-I$withvalue"
+else
+
+    ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ ac_fn_c_check_header_mongrel "$LINENO" "tgcl.h" "ac_cv_header_tgcl_h" "$ac_includes_default"
+if test "x$ac_cv_header_tgcl_h" = xyes; then :
+   got="yes"
+else
+   got="no"
+fi
+
+
+ hdr=`echo tgcl.h | $as_tr_sh`
+ for dir in /usr/include/tgcl /usr/local/include/tgcl /opt/local/include/tgcl; do
+  if test "x${got}" = "xno"; then
+   ext_hashdr_cvdir=`echo $dir | $as_tr_sh`
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tgcl.h library with -I$dir" >&5
+$as_echo_n "checking for tgcl.h library with -I$dir... " >&6; }
+if eval \${ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ext_have_hdr_save_cflags=${CFLAGS}
+     CFLAGS="${CFLAGS} -I${dir}"
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <tgcl.h>
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  got="yes"; eval "ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}"="yes"
+else
+  got="no"; eval "ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}"="no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+      CFLAGS=$ext_have_hdr_save_cflags
+fi
+eval ac_res=\$ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+     if eval `echo 'test x${'ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}'}' = "xyes"`; then
+      CFLAGS="${CFLAGS} -I${dir}"
+      CPPFLAGS="${CPPFLAGS} -I${dir}"
+      got="yes";
+      hdr=`echo tgcl.h | $as_tr_cpp`
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_${hdr} 1
+_ACEOF
+
+  fi; fi; done
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
+fi
+
+
+
+
+# Check whether --with-tgcl-lib-dir was given.
+if test "${with_tgcl_lib_dir+set}" = set; then :
+  withval=$with_tgcl_lib_dir; TGCL_LIBS="-L$withval -ltgcl"
+else
+  TGCL_LIBS="-L/usr/local/lib -ltgcl"
+
+fi
+
 
 
 ac_fn_c_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"
@@ -11712,26 +11707,6 @@ _ACEOF
 
 fi
 done
-
-
-
-# Check whether --with-tgcl-include-dir was given.
-if test "${with_tgcl_include_dir+set}" = set; then :
-  withval=$with_tgcl_include_dir; TGCL_CFLAGS="-I$withval"
-else
-  TGCL_CFLAGS="-I/usr/local/include/tgcl"
-fi
-
-
-
-
-# Check whether --with-tgcl-lib-dir was given.
-if test "${with_tgcl_lib_dir+set}" = set; then :
-  withval=$with_tgcl_lib_dir; TGCL_LIBS="-L$withval -ltgcl"
-else
-  TGCL_LIBS="-ltgcl"
-fi
-
 
 
 ac_config_files="$ac_config_files Makefile src/Makefile src/tests/Makefile"
