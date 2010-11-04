@@ -1,5 +1,5 @@
 AC_INIT([src/class_ParseDelimitedText_i.c])
-AM_INIT_AUTOMAKE([libparse_delimited_text],[0.0.1])
+AM_INIT_AUTOMAKE([libpdt],[0.0.1])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 

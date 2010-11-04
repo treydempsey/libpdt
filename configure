@@ -2693,7 +2693,7 @@ fi
 
 
 # Define the identity of the package.
- PACKAGE=libparse_delimited_text
+ PACKAGE=libpdt
  VERSION=0.0.1
 
 

@@ -36,8 +36,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = src
-DIST_COMMON = $(libparse_delimited_text_la_include_HEADERS) \
-	$(noinst_HEADERS) $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(libpdt_la_include_HEADERS) $(noinst_HEADERS) \
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_ext_check_header.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
@@ -71,13 +71,11 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(libdir)" \
-	"$(DESTDIR)$(libparse_delimited_text_la_includedir)"
+	"$(DESTDIR)$(libpdt_la_includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libparse_delimited_text_la_LIBADD =
-am_libparse_delimited_text_la_OBJECTS =  \
-	libparse_delimited_text_la-class_ParseDelimitedText_i.lo
-libparse_delimited_text_la_OBJECTS =  \
-	$(am_libparse_delimited_text_la_OBJECTS)
+libpdt_la_LIBADD =
+am_libpdt_la_OBJECTS = libpdt_la-class_ParseDelimitedText_i.lo
+libpdt_la_OBJECTS = $(am_libpdt_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -91,10 +89,9 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libparse_delimited_text_la_SOURCES)
-DIST_SOURCES = $(libparse_delimited_text_la_SOURCES)
-HEADERS = $(libparse_delimited_text_la_include_HEADERS) \
-	$(noinst_HEADERS)
+SOURCES = $(libpdt_la_SOURCES)
+DIST_SOURCES = $(libpdt_la_SOURCES)
+HEADERS = $(libpdt_la_include_HEADERS) $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -214,14 +211,14 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
-lib_LTLIBRARIES = libparse_delimited_text.la
+lib_LTLIBRARIES = libpdt.la
 AM_CFLAGS = -g -std=c99 -Wall -arch x86_64
 AM_LDFLAGS = -version-info 0:0:0
-libparse_delimited_text_la_SOURCES = class_ParseDelimitedText_i.c
-libparse_delimited_text_la_includedir = $(includedir)/parse_delimited_text
-libparse_delimited_text_la_include_HEADERS = class_ParseDelimitedText.h
-libparse_delimited_text_la_CPPFLAGS = $(TGCL_CFLAGS)
-libparse_delimited_text_la_LIBS = $(TGCL_LIBS)
+libpdt_la_SOURCES = class_ParseDelimitedText_i.c
+libpdt_la_includedir = $(includedir)/parse_delimited_text
+libpdt_la_include_HEADERS = class_ParseDelimitedText.h
+libpdt_la_CPPFLAGS = $(TGCL_CFLAGS)
+libpdt_la_LIBS = $(TGCL_LIBS)
 noinst_HEADERS = class_ParseDelimitedText_i.h dependencies.h
 all: all-am
 
@@ -288,8 +285,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libparse_delimited_text.la: $(libparse_delimited_text_la_OBJECTS) $(libparse_delimited_text_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libparse_delimited_text_la_OBJECTS) $(libparse_delimited_text_la_LIBADD) $(LIBS)
+libpdt.la: $(libpdt_la_OBJECTS) $(libpdt_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libpdt_la_OBJECTS) $(libpdt_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -297,7 +294,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libparse_delimited_text_la-class_ParseDelimitedText_i.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpdt_la-class_ParseDelimitedText_i.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -320,38 +317,38 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libparse_delimited_text_la-class_ParseDelimitedText_i.lo: class_ParseDelimitedText_i.c
-@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libparse_delimited_text_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libparse_delimited_text_la-class_ParseDelimitedText_i.lo -MD -MP -MF $(DEPDIR)/libparse_delimited_text_la-class_ParseDelimitedText_i.Tpo -c -o libparse_delimited_text_la-class_ParseDelimitedText_i.lo `test -f 'class_ParseDelimitedText_i.c' || echo '$(srcdir)/'`class_ParseDelimitedText_i.c
-@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libparse_delimited_text_la-class_ParseDelimitedText_i.Tpo $(DEPDIR)/libparse_delimited_text_la-class_ParseDelimitedText_i.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_ParseDelimitedText_i.c' object='libparse_delimited_text_la-class_ParseDelimitedText_i.lo' libtool=yes @AMDEPBACKSLASH@
+libpdt_la-class_ParseDelimitedText_i.lo: class_ParseDelimitedText_i.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libpdt_la-class_ParseDelimitedText_i.lo -MD -MP -MF $(DEPDIR)/libpdt_la-class_ParseDelimitedText_i.Tpo -c -o libpdt_la-class_ParseDelimitedText_i.lo `test -f 'class_ParseDelimitedText_i.c' || echo '$(srcdir)/'`class_ParseDelimitedText_i.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libpdt_la-class_ParseDelimitedText_i.Tpo $(DEPDIR)/libpdt_la-class_ParseDelimitedText_i.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_ParseDelimitedText_i.c' object='libpdt_la-class_ParseDelimitedText_i.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libparse_delimited_text_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libparse_delimited_text_la-class_ParseDelimitedText_i.lo `test -f 'class_ParseDelimitedText_i.c' || echo '$(srcdir)/'`class_ParseDelimitedText_i.c
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libpdt_la-class_ParseDelimitedText_i.lo `test -f 'class_ParseDelimitedText_i.c' || echo '$(srcdir)/'`class_ParseDelimitedText_i.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-libparse_delimited_text_la_includeHEADERS: $(libparse_delimited_text_la_include_HEADERS)
+install-libpdt_la_includeHEADERS: $(libpdt_la_include_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(libparse_delimited_text_la_includedir)" || $(MKDIR_P) "$(DESTDIR)$(libparse_delimited_text_la_includedir)"
-	@list='$(libparse_delimited_text_la_include_HEADERS)'; test -n "$(libparse_delimited_text_la_includedir)" || list=; \
+	test -z "$(libpdt_la_includedir)" || $(MKDIR_P) "$(DESTDIR)$(libpdt_la_includedir)"
+	@list='$(libpdt_la_include_HEADERS)'; test -n "$(libpdt_la_includedir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libparse_delimited_text_la_includedir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libparse_delimited_text_la_includedir)" || exit $$?; \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(libpdt_la_includedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(libpdt_la_includedir)" || exit $$?; \
 	done
 
-uninstall-libparse_delimited_text_la_includeHEADERS:
+uninstall-libpdt_la_includeHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(libparse_delimited_text_la_include_HEADERS)'; test -n "$(libparse_delimited_text_la_includedir)" || list=; \
+	@list='$(libpdt_la_include_HEADERS)'; test -n "$(libpdt_la_includedir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(libparse_delimited_text_la_includedir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(libparse_delimited_text_la_includedir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(libpdt_la_includedir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(libpdt_la_includedir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -439,7 +436,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libparse_delimited_text_la_includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libpdt_la_includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -490,7 +487,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-libparse_delimited_text_la_includeHEADERS
+install-data-am: install-libpdt_la_includeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -537,7 +534,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-libLTLIBRARIES \
-	uninstall-libparse_delimited_text_la_includeHEADERS
+	uninstall-libpdt_la_includeHEADERS
 
 .MAKE: install-am install-strip
 
@@ -548,15 +545,14 @@ uninstall-am: uninstall-libLTLIBRARIES \
 	install install-am install-data install-data-am install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
 	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES \
-	install-libparse_delimited_text_la_includeHEADERS install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-libLTLIBRARIES \
-	uninstall-libparse_delimited_text_la_includeHEADERS
+	install-libLTLIBRARIES install-libpdt_la_includeHEADERS \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-libLTLIBRARIES \
+	uninstall-libpdt_la_includeHEADERS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

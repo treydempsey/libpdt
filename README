@@ -1,6 +1,6 @@
-libparse_delimited_text
+libpdt
 -----------------------
-libparse_delimited_text is a library for parsing delimited text.  It supports
+libpdt is a library for parsing delimited text.  It supports
 multicharacter delimiters, quoting, and has improper quote handling.  Although
 it can be configured to parse comma separated values, it is designed to be a
 more generic delmited text parser.
@@ -13,10 +13,10 @@ See the INSTALL file for details and instructions.
 
 License
 -------
-libparse_delimited_text is distributed under the terms of the GNU Lesser
+libpdt is distributed under the terms of the GNU Lesser
 General Public License.  See COPYING.LESSER for more details.
 
 Parts of this library were taken from the libcsv-3.0.0 library.
 http://sourceforge.net/projects/libcsv/.  libcsv-3.0.0 is licensed under the
-GNU Lesser General Public License.  libparse_delimited_text continues to be
+GNU Lesser General Public License.  libpdt continues to be
 licensed under the GNU Lesser General Public License.
