@@ -1,0 +1,6 @@
+Revision history for Perl extension PDT.
+
+0.01  Sat Nov  6 04:18:50 2010
+	- original version; created by h2xs 1.23 with options
+		-n PDT
+
