@@ -112,16 +112,25 @@ error:
 static ParseDelimitedText *
 ParseDelimitedText_init(ParseDelimitedText *self, unsigned char options)
 {
+  if(self != null_ParseDelimitedText) {
+    self->input               = new_String("", 4096, 0);
+    self->field               = new_String("", 4096, 0);
+    self->lookahead           = new_String("", 10, 0);
+    self->trailing_space      = new_String("", 32, 0);
+  }
+  else {
+    self->input               = null_String;
+    self->field               = null_String;
+    self->lookahead           = null_String;
+    self->trailing_space      = null_String;
+  }
+
   self->state               = ST_RECORD_NOT_BEGUN;
-  self->input               = new_String("", 4096, 0);
-  self->field               = new_String("", 4096, 0);
   self->status              = PDT_SUCCESS;
   self->options             = options;
   self->block_size          = 4096;
   self->compound_delimiter  = 0;
 
-  self->lookahead           = new_String("", 10, 0);
-  self->trailing_space      = new_String("", 32, 0);
   self->delimiter           = null_String;
   self->quote               = null_String;
 
@@ -176,14 +185,14 @@ ParseDelimitedText_delimiter(ParseDelimitedText *self)
 }
 
 static ParseDelimitedText *
-ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter)
+ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter, size_t new_delimiter_length)
 {
   if(self != null_ParseDelimitedText) {
     if(self->delimiter != null_String) {
       self->delimiter = self->delimiter->m->free(self->delimiter);
     }
 
-    self->delimiter = new_String(new_delimiter, strlen(new_delimiter) + 1, strlen(new_delimiter));
+    self->delimiter = new_String(new_delimiter, new_delimiter_length + 1, new_delimiter_length);
     self->compound_delimiter = (self->delimiter->length > 1) ? 1 : 0;
   }
 
@@ -198,14 +207,14 @@ ParseDelimitedText_quote(ParseDelimitedText *self)
 }
 
 static ParseDelimitedText *
-ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote)
+ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote, size_t new_quote_length)
 {
   if(self != null_ParseDelimitedText) {
     if(self->quote != null_String) {
       self->quote = self->quote->m->free(self->quote);
     }
 
-    self->quote = new_String(new_quote, strlen(new_quote) + 1, strlen(new_quote));
+    self->quote = new_String(new_quote, new_quote_length + 1, new_quote_length);
   }
 
   return self;

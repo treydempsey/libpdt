@@ -36,9 +36,9 @@ static ParseDelimitedText * ParseDelimitedText_free(ParseDelimitedText *self);
 static size_t               ParseDelimitedText_block_size(ParseDelimitedText *self);
 static ParseDelimitedText * ParseDelimitedText_set_block_size(ParseDelimitedText *self, size_t new_block_size);
 static String *             ParseDelimitedText_delimiter(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter);
+static ParseDelimitedText * ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter, size_t new_delimiter_length);
 static String *             ParseDelimitedText_quote(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote);
+static ParseDelimitedText * ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote, size_t new_quote_length);
 
 static size_t               ParseDelimitedText_parse(ParseDelimitedText *self, char *input, size_t input_length);
 static size_t               ParseDelimitedText_finish(ParseDelimitedText *self);

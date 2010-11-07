@@ -74,9 +74,9 @@ typedef struct ParseDelimitedTextMethods {
   size_t               (*block_size)(ParseDelimitedText *self);
   ParseDelimitedText * (*set_block_size)(ParseDelimitedText *self, size_t new_block_size);
   String*              (*delimiter)(ParseDelimitedText *self);
-  ParseDelimitedText * (*set_delimiter)(ParseDelimitedText *self, char *new_delimiter);
+  ParseDelimitedText * (*set_delimiter)(ParseDelimitedText *self, char *new_delimiter, size_t new_delimiter_length);
   String *             (*quote)(ParseDelimitedText *self);
-  ParseDelimitedText * (*set_quote)(ParseDelimitedText *self, char *new_quote);
+  ParseDelimitedText * (*set_quote)(ParseDelimitedText *self, char *new_quote, size_t new_quote_length);
 
   /* Instance Methods */
   size_t               (*parse)(ParseDelimitedText *self, char *input, size_t input_length);
