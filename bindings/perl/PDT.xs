@@ -4,8 +4,6 @@
 
 #include "ppport.h"
 
-#include "const-c.inc"
-
 #include <class_ParseDelimitedText.h>
 
 
@@ -16,8 +14,12 @@ typedef struct ParseDelimitedTextXS {
   ParseDelimitedText *  self;
   SV *                  field_callback;
   SV *                  record_callback;
-  int                   retain;
 } ParseDelimitedTextXS;
+
+
+typedef struct ParseDelimitedTextCB {
+  ParseDelimitedText *  self;
+} ParseDelimitedTextCB;
 
 
 static void
@@ -27,9 +29,9 @@ field_callback_shim(ParseDelimitedText * self, String * field)
 
   SV **                   p_xs_context;
   ParseDelimitedTextXS *  xs;
+  ParseDelimitedTextCB *  xs_cb;
+  SV *                    parser_sv;
   SV *                    field_sv;
-  HV *                    stash;
-  SV *                    xs_rv;
 
   ENTER;
   SAVETMPS;
@@ -43,16 +45,17 @@ field_callback_shim(ParseDelimitedText * self, String * field)
   if(xs == NULL) {
     croak("ParseDelimitedTextXS::field_callback_shim() could not locate context\n");
   }
-  //xs->retain = 1;
-
-  stash = gv_stashpvn("ParseDelimitedTextXS", 20, TRUE);
 
   PUSHMARK(SP);
   if(xs->field_callback != NULL) {
-    //xs_rv = newRV_noinc(*p_xs_context);
-    //sv_bless(xs_rv, stash);
+    Newx(xs_cb, sizeof(ParseDelimitedTextCB), ParseDelimitedTextCB);
+    xs_cb->self = xs->self;
+    parser_sv = sv_newmortal();
+    sv_setref_pv(parser_sv, "ParseDelimitedTextCB", (void *)xs_cb);
+
     field_sv = newSVpv(field->string, field->length);
-    XPUSHs(*p_xs_context);
+
+    XPUSHs(parser_sv);
     XPUSHs(sv_2mortal(field_sv));
     PUTBACK;
 
@@ -72,27 +75,32 @@ record_callback_shim(ParseDelimitedText * self, char eol)
 {
   dSP;
 
-  SV **                   p_xs_sv;
-  SV *                    xs_sv;
+  SV **                   p_xs_context;
   ParseDelimitedTextXS *  xs;
+  ParseDelimitedTextCB *  xs_cb;
+  SV *                    parser_sv;
   SV *                    eol_sv;
 
   ENTER;
   SAVETMPS;
 
-  p_xs_sv = hv_fetch(PDT_contexts, (char *)self, sizeof(ParseDelimitedText *), 0);
-  if(p_xs_sv == NULL) { 
+  p_xs_context = hv_fetch(PDT_contexts, (char *)self, sizeof(ParseDelimitedText *), 0);
+  if(p_xs_context == NULL) { 
     croak("ParseDelimitedTextXS::record_callback_shim() could not locate context\n");
   }
 
-  xs_sv = *p_xs_sv;
-  xs = (ParseDelimitedTextXS *)SvUV(xs_sv);
+  xs = (ParseDelimitedTextXS *)SvUV(*p_xs_context);
 
   PUSHMARK(SP);
   if(xs->record_callback != NULL) {
+    Newx(xs_cb, sizeof(ParseDelimitedTextCB), ParseDelimitedTextCB);
+    xs_cb->self = xs->self;
+    parser_sv = sv_newmortal();
+    sv_setref_pv(parser_sv, "ParseDelimitedTextCB", (void *)xs_cb);
+
     eol_sv = newSVpv(&eol, 1);
 
-    XPUSHs(xs_sv);
+    XPUSHs(parser_sv);
     XPUSHs(sv_2mortal(eol_sv));
     PUTBACK;
 
@@ -108,7 +116,7 @@ record_callback_shim(ParseDelimitedText * self, char eol)
 
 
 static int
-set_block_size(pTHX_ SV * sv, MAGIC * mg)
+set_xs_block_size(pTHX_ SV * sv, MAGIC * mg)
 {
   if(! SvOK(sv)) {
     croak("only defined values can be assigned to block_size");
@@ -119,8 +127,8 @@ set_block_size(pTHX_ SV * sv, MAGIC * mg)
   return TRUE;
 }
 
-static MGVTBL block_size_vtbl = {
-  0, set_block_size,
+static MGVTBL xs_block_size_vtbl = {
+  0, set_xs_block_size,
   0, 0, 0,
 #if defined(PERL_REVISION) && PERL_VERSION >= 8
   0, 0,
@@ -129,7 +137,7 @@ static MGVTBL block_size_vtbl = {
 
 
 static int
-set_delimiter(pTHX_ SV * sv, MAGIC * mg)
+set_xs_delimiter(pTHX_ SV * sv, MAGIC * mg)
 {
   ParseDelimitedTextXS *  xs;
   char *                  new_delimiter;
@@ -146,8 +154,8 @@ set_delimiter(pTHX_ SV * sv, MAGIC * mg)
   return TRUE;
 }
 
-static MGVTBL delimiter_vtbl = {
-  0, set_delimiter,
+static MGVTBL xs_delimiter_vtbl = {
+  0, set_xs_delimiter,
   0, 0, 0,
 #if defined(PERL_REVISION) && PERL_VERSION >= 8
   0, 0,
@@ -156,7 +164,7 @@ static MGVTBL delimiter_vtbl = {
 
 
 static int
-set_quote(pTHX_ SV * sv, MAGIC * mg)
+set_xs_quote(pTHX_ SV * sv, MAGIC * mg)
 {
   ParseDelimitedTextXS *  xs;
   char *                  new_quote;
@@ -175,8 +183,8 @@ set_quote(pTHX_ SV * sv, MAGIC * mg)
   return TRUE;
 }
 
-static MGVTBL quote_vtbl = {
-  0, set_quote,
+static MGVTBL xs_quote_vtbl = {
+  0, set_xs_quote,
   0, 0, 0,
 #if defined(PERL_REVISION) && PERL_VERSION >= 8
   0, 0,
@@ -185,7 +193,7 @@ static MGVTBL quote_vtbl = {
 
 
 static int
-set_field_callback(pTHX_ SV * sv, MAGIC * mg)
+set_xs_field_callback(pTHX_ SV * sv, MAGIC * mg)
 {
   ParseDelimitedTextXS *  xs;
 
@@ -204,8 +212,8 @@ set_field_callback(pTHX_ SV * sv, MAGIC * mg)
   return TRUE;
 }
 
-static MGVTBL field_callback_vtbl = {
-  0, set_field_callback,
+static MGVTBL xs_field_callback_vtbl = {
+  0, set_xs_field_callback,
   0, 0, 0,
 #if defined(PERL_REVISION) && PERL_VERSION >= 8
   0, 0,
@@ -214,7 +222,7 @@ static MGVTBL field_callback_vtbl = {
 
 
 static int
-set_record_callback(pTHX_ SV * sv, MAGIC * mg)
+set_xs_record_callback(pTHX_ SV * sv, MAGIC * mg)
 {
   ParseDelimitedTextXS *  xs;
 
@@ -233,8 +241,8 @@ set_record_callback(pTHX_ SV * sv, MAGIC * mg)
   return TRUE;
 }
 
-static MGVTBL record_callback_vtbl = {
-  0, set_record_callback,
+static MGVTBL xs_record_callback_vtbl = {
+  0, set_xs_record_callback,
   0, 0, 0,
 #if defined(PERL_REVISION) && PERL_VERSION >= 8
   0, 0,
@@ -242,19 +250,36 @@ static MGVTBL record_callback_vtbl = {
 };
 
 
+
+/****************************************/
 MODULE = PDT  PACKAGE = ParseDelimitedText
 
 PROTOTYPES: ENABLE
 
-INCLUDE: const-xs.inc
+BOOT:
+{
+  HV *stash;
+
+  stash = gv_stashpv("ParseDelimitedText", TRUE);
+
+  newCONSTSUB(stash, "PDT_STRICT", newSViv(PDT_STRICT));
+  newCONSTSUB(stash, "PDT_REPALL_NL", newSViv(PDT_REPALL_NL));
+  newCONSTSUB(stash, "PDT_STRICT_FINI", newSViv(PDT_STRICT_FINI));
+  newCONSTSUB(stash, "PDT_SUCCESS", newSViv(PDT_SUCCESS));
+  newCONSTSUB(stash, "PDT_EPARSE", newSViv(PDT_EPARSE));
+  newCONSTSUB(stash, "PDT_ENOMEM", newSViv(PDT_ENOMEM));
+  newCONSTSUB(stash, "PDT_ETOOBIG", newSViv(PDT_ETOOBIG));
+  newCONSTSUB(stash, "PDT_EINVALID", newSViv(PDT_EINVALID));
+}
+
 
 ParseDelimitedTextXS *
 new(options)
     unsigned char options
-  INIT:
+  PREINIT:
     ParseDelimitedTextXS *  xs;
-    SV *                    xs_sv;
-  CODE:
+    SV *                    xs_context;
+  PPCODE:
     if(PDT_contexts == NULL) {
       PDT_contexts = newHV();
     }
@@ -265,17 +290,14 @@ new(options)
     xs->self->record_callback = record_callback_shim;
     xs->field_callback = NULL;
     xs->record_callback = NULL;
-    xs->retain = 0;
 
-    xs_sv = newSVuv((UV)xs);
-    hv_store(PDT_contexts, (char *)xs->self, sizeof(ParseDelimitedText *), xs_sv, 0);
-
-    printf("new() xs %p\n", xs);
-    printf("new() xs_sv %p\n", xs_sv);
+    xs_context = newSVuv((UV)xs);
+    hv_store(PDT_contexts, (char *)xs->self, sizeof(ParseDelimitedText *), xs_context, 0);
 
     ST(0) = sv_newmortal();
     sv_setref_pv(ST(0), "ParseDelimitedTextXS", (void *)xs);
     XSRETURN(1);
+
 
 
 MODULE = PDT  PACKAGE = ParseDelimitedTextXS
@@ -342,7 +364,7 @@ block_size(xs)
     LvTYPE(sv) = PERL_MAGIC_ext;
     LvTARG(sv) = SvREFCNT_inc(SvRV(ST(0)));
 
-    SvMAGIC(sv)->mg_virtual = &block_size_vtbl;
+    SvMAGIC(sv)->mg_virtual = &xs_block_size_vtbl;
     sv_2mortal(sv);
     ST(0) = sv;
     XSRETURN(1);
@@ -361,7 +383,7 @@ delimiter(xs)
     LvTYPE(sv) = PERL_MAGIC_ext;
     LvTARG(sv) = SvREFCNT_inc(SvRV(ST(0)));
 
-    SvMAGIC(sv)->mg_virtual = &delimiter_vtbl;
+    SvMAGIC(sv)->mg_virtual = &xs_delimiter_vtbl;
     sv_2mortal(sv);
     ST(0) = sv;
     XSRETURN(1);
@@ -380,7 +402,7 @@ quote(xs)
     LvTYPE(sv) = PERL_MAGIC_ext;
     LvTARG(sv) = SvREFCNT_inc(SvRV(ST(0)));
 
-    SvMAGIC(sv)->mg_virtual = &quote_vtbl;
+    SvMAGIC(sv)->mg_virtual = &xs_quote_vtbl;
     sv_2mortal(sv);
     ST(0) = sv;
     XSRETURN(1);
@@ -404,7 +426,7 @@ field_callback(xs)
     LvTYPE(sv) = PERL_MAGIC_ext;
     LvTARG(sv) = SvREFCNT_inc(SvRV(ST(0)));
 
-    SvMAGIC(sv)->mg_virtual = &field_callback_vtbl;
+    SvMAGIC(sv)->mg_virtual = &xs_field_callback_vtbl;
     sv_2mortal(sv);
     ST(0) = sv;
     XSRETURN(1);
@@ -425,10 +447,11 @@ record_callback(xs)
     sv_upgrade(sv, SVt_PVLV);
     sv_magic(sv, Nullsv, PERL_MAGIC_ext, Nullch, 0);
     SvSMAGICAL_on(sv);
+
     LvTYPE(sv) = PERL_MAGIC_ext;
     LvTARG(sv) = SvREFCNT_inc(SvRV(ST(0)));
 
-    SvMAGIC(sv)->mg_virtual = &record_callback_vtbl;
+    SvMAGIC(sv)->mg_virtual = &xs_record_callback_vtbl;
     sv_2mortal(sv);
     ST(0) = sv;
     XSRETURN(1);
@@ -463,37 +486,147 @@ finish(xs)
     RETVAL
 
 
-void
+ParseDelimitedTextXS *
 stop(xs)
     ParseDelimitedTextXS *  xs
   CODE:
     xs->self->stop = 1;
+    RETVAL = xs;
+  OUTPUT:
+    RETVAL
+
+
+ParseDelimitedTextXS *
+reset_state(xs)
+    ParseDelimitedTextXS *  xs
+  CODE:
+    xs->self->m->reset_state(xs->self);
+    RETVAL = xs;
+  OUTPUT:
+    RETVAL
+
+
+char *
+state_to_s(xs)
+    ParseDelimitedTextXS *  xs
+  CODE:
+    RETVAL = xs->self->m->state_to_s(xs->self);
+  OUTPUT:
+    RETVAL
+
+
+char *
+status_to_s(xs)
+    ParseDelimitedTextXS *  xs
+  CODE:
+    RETVAL = xs->self->m->status_to_s(xs->self);
+  OUTPUT:
+    RETVAL
+
+
+char *
+char_class_to_s(xs)
+    ParseDelimitedTextXS *  xs
+  CODE:
+    RETVAL = xs->self->m->char_class_to_s(xs->self);
+  OUTPUT:
+    RETVAL
 
 
 void
 DESTROY(xs)
     ParseDelimitedTextXS * xs
-  INIT:
-    SV **                  p_xs_context;
   CODE:
-    printf("DESTROY() pdt\n");
+    hv_delete(PDT_contexts, (char *)xs->self, sizeof(ParseDelimitedText *), G_DISCARD);
 
-    if(xs->retain == 0) {
-      printf("Freeing\n");
-      hv_delete(PDT_contexts, (char *)xs->self, sizeof(ParseDelimitedText *), G_DISCARD);
+    if(xs->self != NULL && xs->self != null_ParseDelimitedText) {
+      xs->self->m->free(xs->self);
+    }
+    if(xs->field_callback != NULL) {
+       SvREFCNT_dec(xs->field_callback);
+    }
+    if(xs->record_callback != NULL) {
+       SvREFCNT_dec(xs->record_callback);
+    }
+    Safefree(xs);
 
-      if(xs->self != NULL && xs->self != null_ParseDelimitedText) {
-        xs->self->m->free(xs->self);
-      }
-      if(xs->field_callback != NULL) {
-         SvREFCNT_dec(xs->field_callback);
-      }
-      if(xs->record_callback != NULL) {
-         SvREFCNT_dec(xs->record_callback);
-      }
-      Safefree(xs);
-    }
-    else {
-      printf("Retaining\n");
-      xs->retain = 0;
-    }
+
+MODULE = PDT  PACKAGE = ParseDelimitedTextCB
+
+PROTOTYPES: ENABLE
+
+size_t
+block_size(cb)
+    ParseDelimitedTextCB *  cb 
+  CODE:
+    RETVAL = cb->self->block_size;
+  OUTPUT:
+    RETVAL
+
+
+void
+delimiter(cb)
+    ParseDelimitedTextXS *  cb
+  PREINIT:
+    SV *                    sv;
+  PPCODE:
+    sv = newSVpv(cb->self->delimiter->string, cb->self->delimiter->length);
+    sv_2mortal(sv);
+    ST(0) = sv;
+    XSRETURN(1);
+
+
+void
+quote(cb)
+    ParseDelimitedTextCB *  cb
+  PREINIT:
+    SV *                    sv;
+  PPCODE:
+    sv = newSVpv(cb->self->quote->string, cb->self->quote->length);
+    sv_2mortal(sv);
+    ST(0) = sv;
+    XSRETURN(1);
+
+
+ParseDelimitedTextCB *
+stop(cb)
+    ParseDelimitedTextCB *  cb 
+  CODE:
+    cb->self->stop = 1;
+    RETVAL = cb;
+  OUTPUT:
+    RETVAL
+
+
+char *
+state_to_s(cb)
+    ParseDelimitedTextCB *  cb
+  CODE:
+    RETVAL = cb->self->m->state_to_s(cb->self);
+  OUTPUT:
+    RETVAL
+
+
+char *
+status_to_s(cb)
+    ParseDelimitedTextCB *  cb
+  CODE:
+    RETVAL = cb->self->m->status_to_s(cb->self);
+  OUTPUT:
+    RETVAL
+
+
+char *
+char_class_to_s(cb)
+    ParseDelimitedTextCB *  cb
+  CODE:
+    RETVAL = cb->self->m->char_class_to_s(cb->self);
+  OUTPUT:
+    RETVAL
+
+
+void
+DESTROY(cb)
+    ParseDelimitedTextCB *  cb
+  CODE:
+    Safefree(cb);

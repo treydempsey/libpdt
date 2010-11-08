@@ -1,9 +1,13 @@
-use constant {
-  PDT_FLD => 0,
-  PDT_REC => 1,
-  PDT_END => 2,
-  PDT_ERR => 3
-};
+package TestEngine;
+
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT = qw(PDT_FLD PDT_REC PDT_END PDT_ERR);
+
+use constant PDT_FLD => 0;
+use constant PDT_REC => 1;
+use constant PDT_END => 2;
+use constant PDT_ERR => 3;
 
 our $events = undef;
 our $event_ptr = undef;
@@ -20,7 +24,7 @@ our $test_ok = 1;
 #             {'event_type' => PTD_FLD, 'size' => 2, 'data' => 'ab'},
 #             {'event_type' => PTD_FLD, 'size' => 3, 'data' => 'cde'},
 #             {'event_type' => PTD_FLD, 'size' => 1, 'data' => 'f'},
-#             {'event_type' => PTD_REC, 'retval' => "\x0a"},
+#             {'event_type' => PTD_REC, 'eol' => "\x0a"},
 #             {'event_type' => PTD_END}
 # ];
 
@@ -77,8 +81,9 @@ sub record
   }
 
   # Check that the row ended with the character we expected
-  if($event_ptr->{'retval'} ne $eol) {
+  if($event_ptr->{'eol'} ne $eol) {
     $parser->stop();
+    print "eol: $eol\n";
     fail_parser("row ended with unexpected character");
   }
 
@@ -94,7 +99,7 @@ sub run_test
 
   my $parser;
   my $result = 0;
-  my $retval;
+  my $eol;
   my $bytes;
   my $size;
   my $bytes_processed = 0;
@@ -118,8 +123,8 @@ sub run_test
     do {
       $bytes = ($size < ($len - $bytes_processed)) ? $size : $len - $bytes_processed;
       $input_slice = substr($input, $bytes_processed, $bytes);
-      $retval = $parser->parse($input_slice);
-      if($retval != $bytes) {
+      $eol = $parser->parse($input_slice);
+      if($eol != $bytes) {
         if($event_ptr->{'event_type'} != PDT_ERR) {
           fail_parser("unexpected parse error occured");
         }
@@ -145,6 +150,5 @@ sub run_test
 
   return $test_ok;
 }
-
 
 1;

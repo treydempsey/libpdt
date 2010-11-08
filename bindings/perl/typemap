@@ -1,2 +1,3 @@
 ParseDelimitedText *    T_PTRREF
 ParseDelimitedTextXS *  T_PTRREF
+ParseDelimitedTextCB *  T_PTRREF

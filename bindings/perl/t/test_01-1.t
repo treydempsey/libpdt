@@ -22,23 +22,20 @@
 use strict;
 use warnings;
 use lib 't';
-use Test::More tests => 2;
-
-require 'test_engine.pl';
-
-BEGIN { use_ok('PDT') };
-
+use Test::More tests => 1;
+use PDT;
+use TestEngine;
 
 # |1|2|3|4|5|
 my $data = " 1,2 ,  3         ,4,5\x0d\x0a";
 my $results = [
-  {'event_type' => 0, 'size' => 1, 'data' => "1"},
-  {'event_type' => 0, 'size' => 1, 'data' => "2"},
-  {'event_type' => 0, 'size' => 1, 'data' => "3"},
-  {'event_type' => 0, 'size' => 1, 'data' => "4"},
-  {'event_type' => 0, 'size' => 1, 'data' => "5"},
-  {'event_type' => 1, 'retval' => "\x0d"},
-  {'event_type' => 2}
+  {'event_type' => PDT_FLD, 'size' => 1, 'data' => "1"},
+  {'event_type' => PDT_FLD, 'size' => 1, 'data' => "2"},
+  {'event_type' => PDT_FLD, 'size' => 1, 'data' => "3"},
+  {'event_type' => PDT_FLD, 'size' => 1, 'data' => "4"},
+  {'event_type' => PDT_FLD, 'size' => 1, 'data' => "5"},
+  {'event_type' => PDT_REC, 'eol' => "\x0d"},
+  {'event_type' => PDT_END}
 ];
 
-ok(run_test("test_01-1", 0, $data, length($data), $results, ",", "\""), "parse >$data<");
+ok(TestEngine::run_test("test_01-1", 0, $data, length($data), $results, ",", "\""), "parse >$data<");

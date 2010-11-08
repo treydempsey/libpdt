@@ -21,7 +21,51 @@ typedef double NV; /* 5.6 and later define NVTYPE, and typedef NV to it.  */
 #endif
 
 static int
-constant (pTHX_ const char *name, STRLEN len) {
+constant_10 (pTHX_ const char *name, IV *iv_return) {
+  /* When generated this function returned values for the list of names given
+     here.  However, subsequent manual editing may have added or removed some.
+     PDT_ENOMEM PDT_EPARSE PDT_STRICT */
+  /* Offset 5 gives the best switch position.  */
+  switch (name[5]) {
+  case 'N':
+    if (memEQ(name, "PDT_ENOMEM", 10)) {
+    /*                    ^           */
+#ifdef PDT_ENOMEM
+      *iv_return = PDT_ENOMEM;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'P':
+    if (memEQ(name, "PDT_EPARSE", 10)) {
+    /*                    ^           */
+#ifdef PDT_EPARSE
+      *iv_return = PDT_EPARSE;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 'T':
+    if (memEQ(name, "PDT_STRICT", 10)) {
+    /*                    ^           */
+#ifdef PDT_STRICT
+      *iv_return = PDT_STRICT;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  }
+  return PERL_constant_NOTFOUND;
+}
+
+static int
+constant (pTHX_ const char *name, STRLEN len, IV *iv_return) {
   /* Initially switch on the length of the name.  */
   /* When generated this function returned values for the list of names given
      in this section of perl code.  Rather than manually editing these functions
@@ -36,8 +80,9 @@ constant (pTHX_ const char *name, STRLEN len) {
 #!perl -w
 use ExtUtils::Constant qw (constant_types C_constant XS_constant);
 
-my $types = {map {($_, 1)} qw()};
-my @names = (qw());
+my $types = {map {($_, 1)} qw(IV)};
+my @names = (qw(PDT_EINVALID PDT_ENOMEM PDT_EPARSE PDT_ETOOBIG PDT_REPALL_NL
+	       PDT_STRICT PDT_STRICT_FINI PDT_SUCCESS));
 
 print constant_types(), "\n"; # macro defs
 foreach (C_constant ("PDT", 'constant', 'IV', $types, undef, 3, @names) ) {
@@ -49,6 +94,68 @@ __END__
    */
 
   switch (len) {
+  case 10:
+    return constant_10 (aTHX_ name, iv_return);
+    break;
+  case 11:
+    /* Names all of length 11.  */
+    /* PDT_ETOOBIG PDT_SUCCESS */
+    /* Offset 5 gives the best switch position.  */
+    switch (name[5]) {
+    case 'T':
+      if (memEQ(name, "PDT_ETOOBIG", 11)) {
+      /*                    ^            */
+#ifdef PDT_ETOOBIG
+        *iv_return = PDT_ETOOBIG;
+        return PERL_constant_ISIV;
+#else
+        return PERL_constant_NOTDEF;
+#endif
+      }
+      break;
+    case 'U':
+      if (memEQ(name, "PDT_SUCCESS", 11)) {
+      /*                    ^            */
+#ifdef PDT_SUCCESS
+        *iv_return = PDT_SUCCESS;
+        return PERL_constant_ISIV;
+#else
+        return PERL_constant_NOTDEF;
+#endif
+      }
+      break;
+    }
+    break;
+  case 12:
+    if (memEQ(name, "PDT_EINVALID", 12)) {
+#ifdef PDT_EINVALID
+      *iv_return = PDT_EINVALID;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 13:
+    if (memEQ(name, "PDT_REPALL_NL", 13)) {
+#ifdef PDT_REPALL_NL
+      *iv_return = PDT_REPALL_NL;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
+  case 15:
+    if (memEQ(name, "PDT_STRICT_FINI", 15)) {
+#ifdef PDT_STRICT_FINI
+      *iv_return = PDT_STRICT_FINI;
+      return PERL_constant_ISIV;
+#else
+      return PERL_constant_NOTDEF;
+#endif
+    }
+    break;
   }
   return PERL_constant_NOTFOUND;
 }
