@@ -62,6 +62,7 @@ sub field
   # Check the actual data against the expected data
   if($event_ptr->{'data'} ne $parsed_field) {
     $parser->stop();
+    print("Found: >$parsed_field<\n");
     fail_parser("actual data doesn't match expected data");
   }
 
@@ -83,7 +84,6 @@ sub record
   # Check that the row ended with the character we expected
   if($event_ptr->{'eol'} ne $eol) {
     $parser->stop();
-    print "eol: $eol\n";
     fail_parser("row ended with unexpected character");
   }
 
@@ -140,6 +140,7 @@ sub run_test
         fail_parser("unexpected parse error occured");
       }
       else {
+        return 1;
       }
     }
 

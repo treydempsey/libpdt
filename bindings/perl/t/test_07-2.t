@@ -29,9 +29,7 @@ use TestEngine;
 # | " " " " |
 my $data = "\" \"\" \" \" \"\" \"";
 my $results = [
-  {'event_type' => PDT_FLD, 'size' => 9, 'data' => " \" \" \" \" "},
-  {'event_type' => PDT_REC, 'eol' => "\0"},
-  {'event_type' => PDT_END}
+  {'event_type' => PDT_ERR}
 ];
 
 ok(TestEngine::run_test("test_07-2", ParseDelimitedText::PDT_STRICT, $data, length($data), $results, ",", "\""), "parse >$data<");
