@@ -615,6 +615,11 @@ LTLIBOBJS
 LIBOBJS
 TGCL_LIBS
 TGCL_CFLAGS
+DEBUG_FALSE
+DEBUG_TRUE
+PERL_BINDINGS_FALSE
+PERL_BINDINGS_TRUE
+PERL
 OTOOL64
 OTOOL
 LIPO
@@ -733,6 +738,8 @@ enable_fast_install
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+enable_perl_bindings
+enable_debug
 with_tgcl_include_dir
 with_tgcl_lib_dir
 '
@@ -1371,6 +1378,8 @@ Optional Features:
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
+  --enable-perl-bindings  build perl bindings for libpdt
+  --enable-debug          Turn on debugging
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -11336,6 +11345,43 @@ $as_echo "no" >&6; }
   SET_MAKE="MAKE=${MAKE-make}"
 fi
 
+# Extract the first word of "perl", so it can be a program name with args.
+set dummy perl; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_PERL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$PERL"; then
+  ac_cv_prog_PERL="$PERL" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_PERL="perl"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+PERL=$ac_cv_prog_PERL
+if test -n "$PERL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PERL" >&5
+$as_echo "$PERL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
@@ -11463,13 +11509,54 @@ fi
 done
 
 
+# Check whether --enable-perl-bindings was given.
+if test "${enable_perl_bindings+set}" = set; then :
+  enableval=$enable_perl_bindings; case "${enableval}" in
+    yes) perl_bindings=true ;;
+    no)  perl_bindings=false ;;
+    *) as_fn_error $? "bad value ${enableval} for --enable-perl-bindings" "$LINENO" 5 ;;
+  esac
+else
+  perl_bindings=false
+
+fi
+
+ if test x$perl_bindings = xtrue; then
+  PERL_BINDINGS_TRUE=
+  PERL_BINDINGS_FALSE='#'
+else
+  PERL_BINDINGS_TRUE='#'
+  PERL_BINDINGS_FALSE=
+fi
+
+
+# Check whether --enable-debug was given.
+if test "${enable_debug+set}" = set; then :
+  enableval=$enable_debug; case "${enableval}" in
+    yes) debug=true ;;
+    no)  debug=false ;;
+    *) as_fn_error $? "bad value ${enableval} for --enable-debug" "$LINENO" 5 ;;
+  esac
+else
+  debug=false
+
+fi
+
+ if test x$debug = xtrue; then
+  DEBUG_TRUE=
+  DEBUG_FALSE='#'
+else
+  DEBUG_TRUE='#'
+  DEBUG_FALSE=
+fi
+
+
 
 # Check whether --with-tgcl-include-dir was given.
 if test "${with_tgcl_include_dir+set}" = set; then :
   withval=$with_tgcl_include_dir; TGCL_CFLAGS="-I$withvalue"
 else
-
-    ac_ext=c
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -11517,10 +11604,10 @@ eval ac_res=\$ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}
 	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
 $as_echo "$ac_res" >&6; }
      if eval `echo 'test x${'ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}'}' = "xyes"`; then
-      CFLAGS="${CFLAGS} -I${dir}"
-      CPPFLAGS="${CPPFLAGS} -I${dir}"
       got="yes";
-      hdr=`echo tgcl.h | $as_tr_cpp`
+      hdr=`echo tgcl.h | $as_tr_cpp`;
+      eval ${hdr/_H/}_CFLAGS="-I${dir}";
+      eval ${hdr/_H/}_CPPFLAGS="-I${dir}"
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_${hdr} 1
@@ -11532,7 +11619,6 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
 
 
 fi
@@ -11709,7 +11795,7 @@ fi
 done
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/tests/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile src/tests/Makefile bindings/perl/Makefile bindings/perl/Text-ParseDelimited/Makefile.PL"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -11834,6 +11920,14 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${PERL_BINDINGS_TRUE}" && test -z "${PERL_BINDINGS_FALSE}"; then
+  as_fn_error $? "conditional \"PERL_BINDINGS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${DEBUG_TRUE}" && test -z "${DEBUG_FALSE}"; then
+  as_fn_error $? "conditional \"DEBUG\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -12723,6 +12817,8 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "src/tests/Makefile") CONFIG_FILES="$CONFIG_FILES src/tests/Makefile" ;;
+    "bindings/perl/Makefile") CONFIG_FILES="$CONFIG_FILES bindings/perl/Makefile" ;;
+    "bindings/perl/Text-ParseDelimited/Makefile.PL") CONFIG_FILES="$CONFIG_FILES bindings/perl/Text-ParseDelimited/Makefile.PL" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

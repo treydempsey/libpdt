@@ -11,16 +11,35 @@ AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_CHECK_PROG([PERL], [perl], [perl], )
 
 AC_HEADER_STDC
 AC_CHECK_HEADERS([limits.h locale.h stdint.h stdlib.h string.h])
 
+AC_ARG_ENABLE(perl-bindings,
+  [AS_HELP_STRING([--enable-perl-bindings], [build perl bindings for libpdt])],
+  [case "${enableval}" in
+    yes) perl_bindings=true ;;
+    no)  perl_bindings=false ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-perl-bindings) ;;
+  esac],[perl_bindings=false]
+)
+AM_CONDITIONAL(PERL_BINDINGS, test x$perl_bindings = xtrue)
+  
+AC_ARG_ENABLE(debug,
+  [AS_HELP_STRING([--enable-debug], [Turn on debugging])],
+  [case "${enableval}" in
+    yes) debug=true ;;
+    no)  debug=false ;;
+    *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
+  esac],[debug=false]
+)
+AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+
 AC_ARG_WITH([tgcl-include-dir],
   [AS_HELP_STRING([--with-tgcl-include-dir], [location of the libtgcl header files, defaults to /usr/local/include/tgcl])],
   [TGCL_CFLAGS="-I$withvalue"],
-  [
-    AX_EXT_HAVE_HEADER([tgcl.h], [/usr/include/tgcl /usr/local/include/tgcl /opt/local/include/tgcl])
-  ]
+  [AX_EXT_HAVE_HEADER([tgcl.h], [/usr/include/tgcl /usr/local/include/tgcl /opt/local/include/tgcl])]
 )
 AC_SUBST([TGCL_CFLAGS])
 
@@ -41,5 +60,7 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   src/tests/Makefile
+  bindings/perl/Makefile
+  bindings/perl/Text-ParseDelimited/Makefile.PL
 ]) 
 AC_OUTPUT

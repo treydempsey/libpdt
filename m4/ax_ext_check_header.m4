@@ -48,10 +48,10 @@ AC_DEFUN([AX_EXT_HAVE_HEADER],
        [got="no"; eval "ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}"="no"])
       CFLAGS=$ext_have_hdr_save_cflags])
      if eval `echo 'test x${'ext_cv${ext_hashdr_cvdir}_hashdr_${hdr}'}' = "xyes"`; then
-      CFLAGS="${CFLAGS} -I${dir}"
-      CPPFLAGS="${CPPFLAGS} -I${dir}"
       got="yes";
-      hdr=`echo $1 | $as_tr_cpp`
+      hdr=`echo $1 | $as_tr_cpp`;
+      eval ${hdr/_H/}_CFLAGS="-I${dir}";
+      eval ${hdr/_H/}_CPPFLAGS="-I${dir}"
       AC_DEFINE_UNQUOTED(HAVE_${hdr}, 1,
        [Define this if you have the $1 header])
   fi; fi; done

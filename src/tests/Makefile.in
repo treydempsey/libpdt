@@ -296,6 +296,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PERL = @PERL@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -357,7 +358,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
-AM_CFLAGS = -std=c99 -g
+AM_CFLAGS = -std=c99 $(TGCL_CFLAGS)
 TESTS = $(check_PROGRAMS)
 INCLUDES = -I..
 LDADD = ../libpdt.la
