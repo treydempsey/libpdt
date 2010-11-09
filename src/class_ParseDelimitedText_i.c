@@ -499,7 +499,12 @@ ParseDelimitedText_fire_field_callback(ParseDelimitedText *self)
   if(self != null_ParseDelimitedText) {
     /* DEBUG */
     if(getenv("DEBUG") != NULL) {
-      debug("\t!! fire_field_callback(~%s~, ~%zu~)\n", self->field->string, self->field->length);
+      debug("\t!! fire_field_callback(~");
+      for(self->field->position = 0; self->field->position < self->field->length; self->field->position++) {
+        debug("%02x ", *(self->field->string + self->field->position));
+      }
+      self->field->position = 0;
+      debug("~, ~%zu~)\n", self->field->length);
       fflush(stdout);
     }
 

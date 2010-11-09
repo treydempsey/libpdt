@@ -42,9 +42,10 @@ check_PROGRAMS = test_01-1$(EXEEXT) test_01-2$(EXEEXT) \
 	test_11-1$(EXEEXT) test_12-1$(EXEEXT) test_12-2$(EXEEXT) \
 	test_13-1$(EXEEXT) test_14-1$(EXEEXT) test_14-2$(EXEEXT) \
 	test_15-1$(EXEEXT) test_15-2$(EXEEXT) test_16-1$(EXEEXT) \
-	test_16-2$(EXEEXT) test_16-3$(EXEEXT) test_18-1$(EXEEXT) \
-	test_19-1$(EXEEXT) test_20-1$(EXEEXT) test_21-1$(EXEEXT) \
-	test_22-1$(EXEEXT) test_23-1$(EXEEXT) test_24-1$(EXEEXT)
+	test_16-2$(EXEEXT) test_16-3$(EXEEXT) test_17-1$(EXEEXT) \
+	test_17-2$(EXEEXT) test_18-1$(EXEEXT) test_19-1$(EXEEXT) \
+	test_20-1$(EXEEXT) test_21-1$(EXEEXT) test_22-1$(EXEEXT) \
+	test_23-1$(EXEEXT) test_24-1$(EXEEXT)
 subdir = src/tests
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -170,6 +171,14 @@ test_16_3_SOURCES = test_16-3.c
 test_16_3_OBJECTS = test_16-3.$(OBJEXT)
 test_16_3_LDADD = $(LDADD)
 test_16_3_DEPENDENCIES = ../libpdt.la
+test_17_1_SOURCES = test_17-1.c
+test_17_1_OBJECTS = test_17-1.$(OBJEXT)
+test_17_1_LDADD = $(LDADD)
+test_17_1_DEPENDENCIES = ../libpdt.la
+test_17_2_SOURCES = test_17-2.c
+test_17_2_OBJECTS = test_17-2.$(OBJEXT)
+test_17_2_LDADD = $(LDADD)
+test_17_2_DEPENDENCIES = ../libpdt.la
 test_18_1_SOURCES = test_18-1.c
 test_18_1_OBJECTS = test_18-1.$(OBJEXT)
 test_18_1_LDADD = $(LDADD)
@@ -216,16 +225,17 @@ SOURCES = test_01-1.c test_01-2.c test_02-1.c test_02-2.c test_03-1.c \
 	test_06-1.c test_06-2.c test_07-1.c test_07-2.c test_08-1.c \
 	test_09-1.c test_10-1.c test_11-1.c test_12-1.c test_12-2.c \
 	test_13-1.c test_14-1.c test_14-2.c test_15-1.c test_15-2.c \
-	test_16-1.c test_16-2.c test_16-3.c test_18-1.c test_19-1.c \
-	test_20-1.c test_21-1.c test_22-1.c test_23-1.c test_24-1.c
+	test_16-1.c test_16-2.c test_16-3.c test_17-1.c test_17-2.c \
+	test_18-1.c test_19-1.c test_20-1.c test_21-1.c test_22-1.c \
+	test_23-1.c test_24-1.c
 DIST_SOURCES = test_01-1.c test_01-2.c test_02-1.c test_02-2.c \
 	test_03-1.c test_03-2.c test_04-1.c test_04-2.c test_05-1.c \
 	test_05-2.c test_06-1.c test_06-2.c test_07-1.c test_07-2.c \
 	test_08-1.c test_09-1.c test_10-1.c test_11-1.c test_12-1.c \
 	test_12-2.c test_13-1.c test_14-1.c test_14-2.c test_15-1.c \
-	test_15-2.c test_16-1.c test_16-2.c test_16-3.c test_18-1.c \
-	test_19-1.c test_20-1.c test_21-1.c test_22-1.c test_23-1.c \
-	test_24-1.c
+	test_15-2.c test_16-1.c test_16-2.c test_16-3.c test_17-1.c \
+	test_17-2.c test_18-1.c test_19-1.c test_20-1.c test_21-1.c \
+	test_22-1.c test_23-1.c test_24-1.c
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
@@ -347,6 +357,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = gnu
+AM_CFLAGS = -std=c99 -g
 TESTS = $(check_PROGRAMS)
 INCLUDES = -I..
 LDADD = ../libpdt.la
@@ -477,6 +488,12 @@ test_16-2$(EXEEXT): $(test_16_2_OBJECTS) $(test_16_2_DEPENDENCIES)
 test_16-3$(EXEEXT): $(test_16_3_OBJECTS) $(test_16_3_DEPENDENCIES) 
 	@rm -f test_16-3$(EXEEXT)
 	$(LINK) $(test_16_3_OBJECTS) $(test_16_3_LDADD) $(LIBS)
+test_17-1$(EXEEXT): $(test_17_1_OBJECTS) $(test_17_1_DEPENDENCIES) 
+	@rm -f test_17-1$(EXEEXT)
+	$(LINK) $(test_17_1_OBJECTS) $(test_17_1_LDADD) $(LIBS)
+test_17-2$(EXEEXT): $(test_17_2_OBJECTS) $(test_17_2_DEPENDENCIES) 
+	@rm -f test_17-2$(EXEEXT)
+	$(LINK) $(test_17_2_OBJECTS) $(test_17_2_LDADD) $(LIBS)
 test_18-1$(EXEEXT): $(test_18_1_OBJECTS) $(test_18_1_DEPENDENCIES) 
 	@rm -f test_18-1$(EXEEXT)
 	$(LINK) $(test_18_1_OBJECTS) $(test_18_1_LDADD) $(LIBS)
@@ -533,6 +550,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_16-1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_16-2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_16-3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_17-1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_17-2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_18-1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_19-1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_20-1.Po@am__quote@
