@@ -39,15 +39,15 @@ class_ParseDelimitedText(void)
     ParseDelimitedText_methods.init = ParseDelimitedText_init;
     ParseDelimitedText_methods.free = ParseDelimitedText_free;
 
-    ParseDelimitedText_methods.block_size = ParseDelimitedText_block_size;
     ParseDelimitedText_methods.set_block_size = ParseDelimitedText_set_block_size;
-    ParseDelimitedText_methods.delimiter = ParseDelimitedText_delimiter;
     ParseDelimitedText_methods.set_delimiter = ParseDelimitedText_set_delimiter;
-    ParseDelimitedText_methods.quote = ParseDelimitedText_quote;
     ParseDelimitedText_methods.set_quote = ParseDelimitedText_set_quote;
+    ParseDelimitedText_methods.set_field_callback = ParseDelimitedText_set_field_callback;
+    ParseDelimitedText_methods.set_record_callback = ParseDelimitedText_set_record_callback;
 
     ParseDelimitedText_methods.parse = ParseDelimitedText_parse;
     ParseDelimitedText_methods.finish = ParseDelimitedText_finish;
+    ParseDelimitedText_methods.apply_format = ParseDelimitedText_apply_format;
     ParseDelimitedText_methods.reset_state = ParseDelimitedText_reset_state;
     ParseDelimitedText_methods.fire_field_callback = ParseDelimitedText_fire_field_callback;
     ParseDelimitedText_methods.fire_record_callback = ParseDelimitedText_fire_record_callback;
@@ -70,7 +70,7 @@ class_ParseDelimitedText(void)
 ParseDelimitedText *
 new_ParseDelimitedText(unsigned char options)
 {
-  ParseDelimitedText *self;
+  ParseDelimitedText * self;
 
   self = alloc_ParseDelimitedText();
   self->m->init(self, options);
@@ -82,7 +82,7 @@ new_ParseDelimitedText(unsigned char options)
 ParseDelimitedText *
 alloc_ParseDelimitedText(void)
 {
-  ParseDelimitedText **handle;
+  ParseDelimitedText ** handle;
 
   /* Allocate */
   handle = malloc(sizeof(ParseDelimitedText *));
@@ -110,13 +110,17 @@ error:
 
 
 static ParseDelimitedText *
-ParseDelimitedText_init(ParseDelimitedText *self, unsigned char options)
+ParseDelimitedText_init(ParseDelimitedText * self, unsigned char options)
 {
   if(self != null_ParseDelimitedText) {
-    self->input               = new_String("", 4096, 0);
-    self->field               = new_String("", 4096, 0);
-    self->lookahead           = new_String("", 10, 0);
-    self->trailing_space      = new_String("", 32, 0);
+    self->input               = new_String("", 0);
+    self->input->m->extend(self->input, 4095);
+    self->field               = new_String("", 0);
+    self->field->m->extend(self->field, 4095);
+    self->lookahead           = new_String("", 0);
+    self->lookahead->m->extend(self->lookahead, 9);
+    self->trailing_space      = new_String("", 0);
+    self->trailing_space->m->extend(self->trailing_space, 31);
   }
   else {
     self->input               = null_String;
@@ -139,7 +143,7 @@ ParseDelimitedText_init(ParseDelimitedText *self, unsigned char options)
 
 
 static ParseDelimitedText *
-ParseDelimitedText_free(ParseDelimitedText *self)
+ParseDelimitedText_free(ParseDelimitedText * self)
 {
   if(self != null_ParseDelimitedText) {
     self->input->m->free(self->input);
@@ -161,14 +165,8 @@ ParseDelimitedText_free(ParseDelimitedText *self)
  * Properties
  ************/
 
-static size_t
-ParseDelimitedText_block_size(ParseDelimitedText *self)
-{
-  return self->block_size;
-}
-
 static ParseDelimitedText *
-ParseDelimitedText_set_block_size(ParseDelimitedText *self, size_t new_block_size)
+ParseDelimitedText_set_block_size(ParseDelimitedText * self, size_t new_block_size)
 {
   if(self != null_ParseDelimitedText) {
     self->block_size = new_block_size;
@@ -178,21 +176,15 @@ ParseDelimitedText_set_block_size(ParseDelimitedText *self, size_t new_block_siz
 }
 
 
-static String *
-ParseDelimitedText_delimiter(ParseDelimitedText *self)
-{
-  return self->delimiter;
-}
-
 static ParseDelimitedText *
-ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter, size_t new_delimiter_length)
+ParseDelimitedText_set_delimiter(ParseDelimitedText * self, char * new_delimiter, size_t new_delimiter_length)
 {
   if(self != null_ParseDelimitedText) {
     if(self->delimiter != null_String) {
       self->delimiter = self->delimiter->m->free(self->delimiter);
     }
 
-    self->delimiter = new_String(new_delimiter, new_delimiter_length + 1, new_delimiter_length);
+    self->delimiter = new_String(new_delimiter, new_delimiter_length);
     self->compound_delimiter = (self->delimiter->length > 1) ? 1 : 0;
   }
 
@@ -200,21 +192,37 @@ ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter, 
 }
 
 
-static String *
-ParseDelimitedText_quote(ParseDelimitedText *self)
-{
-  return self->quote;
-}
-
 static ParseDelimitedText *
-ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote, size_t new_quote_length)
+ParseDelimitedText_set_quote(ParseDelimitedText * self, char * new_quote, size_t new_quote_length)
 {
   if(self != null_ParseDelimitedText) {
     if(self->quote != null_String) {
       self->quote = self->quote->m->free(self->quote);
     }
 
-    self->quote = new_String(new_quote, new_quote_length + 1, new_quote_length);
+    self->quote = new_String(new_quote, new_quote_length);
+  }
+
+  return self;
+}
+
+
+static ParseDelimitedText *
+ParseDelimitedText_set_field_callback(ParseDelimitedText * self, void (*new_field_callback)(ParseDelimitedText * parser, String * field))
+{
+  if(self != null_ParseDelimitedText) {
+    self->field_callback = new_field_callback;
+  }
+
+  return self;
+}
+
+
+static ParseDelimitedText *
+ParseDelimitedText_set_record_callback(ParseDelimitedText * self, void (*new_record_callback)(ParseDelimitedText * parser, char eol))
+{
+  if(self != null_ParseDelimitedText) {
+    self->record_callback = new_record_callback;
   }
 
   return self;
@@ -226,223 +234,40 @@ ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote, size_t n
  *************************/
 
 static size_t
-ParseDelimitedText_parse(ParseDelimitedText *self, char *input, size_t input_length)
+ParseDelimitedText_parse(ParseDelimitedText * self, char *input, size_t input_length)
 {
+  int r = -1;
+
   if(self != null_ParseDelimitedText) {
+    /* Clear stopped state */
     if(self->stop != 0) {
-      /* Clear stopped state, but don't reset */
       self->stop = 0;
     }
-    else {
-      /* New input chunk, reset */
-      if(self->input->size < input_length) {
-        self->input->m->extend(self->input, input_length - self->input->size);
-      }
 
-      self->input->m->truncate(self->input);
-      self->input->m->append_cstr(self->input, input, input_length);
+    /* Finish parsing the remaining data */
+    if(self->input->position < self->input->length) {
+      r = _ParseDelimitedText_parse(self);
     }
 
-    while(self->input->position < self->input->length) {
-      if(self->stop != 0) {
-        break;
-      }
+    /* New input chunk, reset */
+    if(self->input->size < input_length) {
+      self->input->m->extend(self->input, input_length - self->input->size);
+    }
 
-      self->lookahead->m->truncate(self->lookahead);
-      self->lookahead->m->slice(self->lookahead, self->input, 9);
-      self->input->position++;
+    self->input->m->truncate(self->input);
+    self->input->m->append_cstr(self->input, input, input_length);
 
-      _ParseDelimitedText_identify_character(self);
-
-      /* DEBUG */
-      debug("I: >>%s<<\n", self->input->string);
-      debug("S: %s, C: %s, P: %zu, L: >>%s<<, F: >>%s<<\n", self->m->state_to_s(self), self->m->char_class_to_s(self), self->input->position, self->lookahead->string, self->field->string);
-      debug("-----\n");
-
-      switch(self->state) {
-        case ST_RECORD_NOT_BEGUN:
-        case ST_FIELD_NOT_BEGUN:
-          /* Unquoted Leading White space */
-          if(self->character_class == CL_WHITE_SPACE) {
-            continue;
-          }
-
-          /* Carriage Return or Line Feed */
-          if(self->character_class == CL_EOL) {
-            if(self->state == ST_FIELD_NOT_BEGUN) {
-              debug("parse() 1: fire_field_callback()\n");
-              self->m->fire_field_callback(self);
-              self->m->fire_record_callback(self);
-            } 
-            /* ST_RECORD_NOT_BEGUN ignore empty rows by default */
-            else if(self->options & PDT_REPALL_NL) {
-              debug("parse() 1: append slice self->lookahead\n");
-              self->field->m->append_slice(self->field, self->lookahead, 1);
-              debug("parse() 2: fire_field_callback()\n");
-              self->m->fire_field_callback(self);
-              self->m->fire_record_callback(self);
-            }
-            continue;
-          }
-          /* Delimiter */
-          else if(self->character_class == CL_FS) {
-            debug("parse() 3: fire_field_callback()\n");
-            self->m->fire_field_callback(self);
-            continue;
-          }
-          /* Quote */
-          else if(self->character_class == CL_QUOTE) {
-            self->state = ST_QUOTED_FIELD;
-          }
-          /* Anything else */
-          else if(self->character_class == CL_CHAR) {
-            self->state = ST_FIELD;
-            /* Add any trailing white space after we've determined there are chars following it. */
-            if(self->trailing_space->length != 0) {
-              debug("parse() 2: append slice self->trailing_space\n");
-              self->field->m->append(self->field, self->trailing_space);
-              self->trailing_space->m->truncate(self->trailing_space);
-            }
-
-            debug("parse() 3: append slice self->lookahead\n");
-            self->field->m->append_slice(self->field, self->lookahead, 1);
-          }
-        break;
-
-        case ST_FIELD:
-          /* Quote */
-          if(self->character_class == CL_QUOTE) {
-            /* STRICT ERROR - double quote inside non-quoted field */
-            if(self->options & PDT_STRICT) {
-              self->status = PDT_EPARSE;
-              return self->input->position - 1;
-            }
-
-            /* Add any trailing white space after we've determined there are chars following it. */
-            if(self->trailing_space->length != 0) {
-              debug("parse() 4: append slice self->trailing_space\n");
-              self->field->m->append(self->field, self->trailing_space);
-              self->trailing_space->m->truncate(self->trailing_space);
-            }
-
-            debug("parse() 5: append slice self->lookahead\n");
-            self->field->m->append_slice(self->field, self->lookahead, 1);
-          }
-          /* Delimiter */
-          else if(self->character_class == CL_FS) {
-            debug("parse() 4: fire_field_callback()\n");
-            self->m->fire_field_callback(self);
-          }
-          /* Carriage Return or Line Feed */
-          else if(self->character_class == CL_EOL) {
-            debug("parse() 5: fire_field_callback()\n");
-            self->m->fire_field_callback(self);
-            self->m->fire_record_callback(self);
-          }
-          /* White space for non-quoted field */
-          else if(self->character_class == CL_WHITE_SPACE) {
-            self->trailing_space->m->append_slice(self->trailing_space, self->lookahead, 1);
-          }
-          /* Anything else */
-          else if(self->character_class == CL_CHAR) {
-            /* Add any trailing white space after we've determined there are chars following it. */
-            if(self->trailing_space->length != 0) {
-              debug("parse() 6: append slice self->trailing_space\n");
-              self->field->m->append(self->field, self->trailing_space);
-              self->trailing_space->m->truncate(self->trailing_space);
-            }
-
-            debug("parse() 7: append slice self->lookahead\n");
-            self->field->m->append_slice(self->field, self->lookahead, 1);
-          }
-        break;
-
-        case ST_QUOTED_FIELD:
-          /* Quote */
-          if(self->character_class == CL_QUOTE) {
-            self->state = ST_POSSIBLE_QUOTED_END;
-          }
-          /* Non-quote */
-          else if(self->character_class == CL_FS
-             || self->character_class == CL_EOL
-             || self->character_class == CL_WHITE_SPACE
-             || self->character_class == CL_CHAR) {
-            /* Add any trailing white space after we've determined there are chars following it. */
-            if(self->trailing_space->length != 0) {
-              debug("parse() 8: append slice self->trailing_space\n");
-              self->field->m->append(self->field, self->trailing_space);
-              self->trailing_space->m->truncate(self->trailing_space);
-            }
-
-            debug("parse() 9: append slice self->lookahead\n");
-            self->field->m->append_slice(self->field, self->lookahead, 1);
-          }
-        break;
-
-        /* This only happens when a quote character is encountered in a quoted field */
-        case ST_POSSIBLE_QUOTED_END:
-          /* Delimiter */
-          if(self->character_class == CL_FS) {
-            debug("parse() 6: fire_field_callback()\n");
-            self->m->fire_field_callback(self);
-          }
-          /* Carriage Return or Line Feed */
-          else if(self->character_class == CL_EOL) {
-            debug("parse() 7: fire_field_callback()\n");
-            self->m->fire_field_callback(self);
-            self->m->fire_record_callback(self);
-          }
-          /* Quote - Two quotes in a row */
-          else if(self->character_class == CL_QUOTE) {
-            /* Add any trailing white space after we've determined there are chars following it. */
-            if(self->trailing_space->length != 0) {
-              debug("parse() 10: append slice self->trailing_space\n");
-              self->field->m->append(self->field, self->trailing_space);
-              self->trailing_space->m->truncate(self->trailing_space);
-            }
-
-            self->state = ST_QUOTED_FIELD;
-            debug("parse() 11: append slice self->lookahead\n");
-            self->field->m->append_slice(self->field, self->lookahead, 1);
-          }
-          /* Anything else */
-          else if(self->character_class == CL_WHITE_SPACE
-             || self->character_class == CL_CHAR) {
-            if(self->options & PDT_STRICT) {
-              /* STRICT ERROR - unescaped double quote */
-              self->status = PDT_EPARSE;
-              return self->input->position - 1;
-            }
-
-            /* Add the previous character which is a quote because we're in ST_POSSIBLE_QUOTED_END */
-            debug("parse() 12: append slice self->quote\n");
-            self->field->m->append_slice(self->field, self->quote, 1);
-
-            /* Add any trailing white space after we've determined there are chars following it. */
-            if(self->trailing_space->length != 0) {
-              debug("parse() 13: append slice self->trailing_space\n");
-              self->field->m->append(self->field, self->trailing_space);
-              self->trailing_space->m->truncate(self->trailing_space);
-            }
-
-            self->state = ST_QUOTED_FIELD;
-            debug("parse() 13: append slice self->lookahead\n");
-            self->field->m->append_slice(self->field, self->lookahead, 1);
-          }
-        break; 
-      } /* switch */
-    } /* while */
-
-    return (self->status == PDT_SUCCESS) ? self->input->position : -1;
+    r = _ParseDelimitedText_parse(self);
   } /* null_ParseDelimitedText */
-  return -1;
+  return r;
 }
 
 
 static size_t
-ParseDelimitedText_finish(ParseDelimitedText *self)
+ParseDelimitedText_finish(ParseDelimitedText * self)
 {
   /* Finalize parsing.  Needed, for example, when file does not end in a newline */
+  debug("finish()\n");
   
   if(self != null_ParseDelimitedText) {
     /* Force them to reset stop */
@@ -481,7 +306,19 @@ ParseDelimitedText_finish(ParseDelimitedText *self)
 
 
 static ParseDelimitedText *
-ParseDelimitedText_reset_state(ParseDelimitedText *self)
+ParseDelimitedText_apply_format(ParseDelimitedText * self, PDTFormat * format)
+{
+  if(self != null_ParseDelimitedText && format != null_PDTFormat) {
+    self->m->set_delimiter(self, format->delimiter->string, format->delimiter->length);
+    self->m->set_quote(self, format->quote->string, format->quote->length);
+  }
+
+  return self;
+}
+
+
+static ParseDelimitedText *
+ParseDelimitedText_reset_state(ParseDelimitedText * self)
 {
   if(self != null_ParseDelimitedText) {
     self->state = ST_FIELD_NOT_BEGUN;
@@ -494,18 +331,23 @@ ParseDelimitedText_reset_state(ParseDelimitedText *self)
  
 
 static ParseDelimitedText *
-ParseDelimitedText_fire_field_callback(ParseDelimitedText *self)
+ParseDelimitedText_fire_field_callback(ParseDelimitedText * self)
 {
   if(self != null_ParseDelimitedText) {
     /* DEBUG */
     if(getenv("DEBUG") != NULL) {
       debug("\t!! fire_field_callback(~");
       for(self->field->position = 0; self->field->position < self->field->length; self->field->position++) {
-        debug("%02x ", *(self->field->string + self->field->position));
+        if(*(self->field->string + self->field->position) < 0x20
+           || *(self->field->string + self->field->position) > 0x7e) {
+          debug("<%02x>", *(self->field->string + self->field->position));
+        }
+        else {
+          debug("%c", *(self->field->string + self->field->position));
+        }
       }
       self->field->position = 0;
       debug("~, ~%zu~)\n", self->field->length);
-      fflush(stdout);
     }
 
     if(self->field_callback != NULL) {
@@ -520,13 +362,12 @@ ParseDelimitedText_fire_field_callback(ParseDelimitedText *self)
 
 
 static ParseDelimitedText *
-ParseDelimitedText_fire_record_callback(ParseDelimitedText *self)
+ParseDelimitedText_fire_record_callback(ParseDelimitedText * self)
 {
   if(self != null_ParseDelimitedText) {
     /* DEBUG */
     if(getenv("DEBUG") != NULL) {
       debug("\t!! fire_record_callback(~%02x~)\n", *(self->lookahead->string));
-      fflush(stdout);
     }
 
     if(self->record_callback != NULL) {
@@ -543,7 +384,7 @@ ParseDelimitedText_fire_record_callback(ParseDelimitedText *self)
 
 
 static ParseDelimitedText *
-ParseDelimitedText_stop(ParseDelimitedText *self)
+ParseDelimitedText_stop(ParseDelimitedText * self)
 {
   if(self != null_ParseDelimitedText) {
     self->stop = 1;
@@ -554,7 +395,7 @@ ParseDelimitedText_stop(ParseDelimitedText *self)
 
 
 static char *
-ParseDelimitedText_state_to_s(ParseDelimitedText *self)
+ParseDelimitedText_state_to_s(ParseDelimitedText * self)
 {
   /* Return a textual description of state  */
   if(self->state < 0 || self->state > 6) {
@@ -567,7 +408,7 @@ ParseDelimitedText_state_to_s(ParseDelimitedText *self)
 
 
 static char *
-ParseDelimitedText_status_to_s(ParseDelimitedText *self)
+ParseDelimitedText_status_to_s(ParseDelimitedText * self)
 {
   /* Return a textual description of status */
   if(self->status < 0 || self->status >= PDT_EINVALID) {
@@ -580,7 +421,7 @@ ParseDelimitedText_status_to_s(ParseDelimitedText *self)
 
 
 static char *
-ParseDelimitedText_char_class_to_s(ParseDelimitedText *self)
+ParseDelimitedText_char_class_to_s(ParseDelimitedText * self)
 {
   /* Return a textual description of character class */
   if(self->character_class < 0 || self->character_class > CL_WHITE_SPACE) {
@@ -597,17 +438,17 @@ ParseDelimitedText_char_class_to_s(ParseDelimitedText *self)
  *****************/
 
 static ParseDelimitedText *
-_ParseDelimitedText_identify_character(ParseDelimitedText *self)
+_ParseDelimitedText_identify_character(ParseDelimitedText * self)
 {
   size_t delimiter_amt;  /* amount to compare for input and delimiter */
   size_t delimiter_matched;
+
   delimiter_amt = (self->lookahead->length < self->delimiter->length - self->delimiter->position) ? self->lookahead->length : self->delimiter->length - self->delimiter->position;
 
   /* DEBUG */
   if(getenv("DEBUG") != NULL) {
     debug("delimiter_amt: %zu, delimiter_position: %zu\n", delimiter_amt, self->delimiter->position);
     debug("comparen: %i %c <=> %c\n", self->lookahead->m->comparen(self->lookahead, self->delimiter, delimiter_amt), *(self->lookahead->string), *(self->delimiter->string + self->delimiter->position));
-    fflush(stdout);
   }
 
   /* Simple FS */
@@ -640,8 +481,6 @@ _ParseDelimitedText_identify_character(ParseDelimitedText *self)
       self->delimiter->position = 0;
       debug("identify_character(): append slice self->delimiter\n");
       self->field->m->append_slice(self->field, self->delimiter, delimiter_matched);
-
-      fflush(stdout);
 
       if(self->lookahead->m->comparen(self->lookahead, self->delimiter, delimiter_amt) == 0) {
         if(delimiter_amt > 0) {
@@ -691,7 +530,203 @@ _ParseDelimitedText_identify_character(ParseDelimitedText *self)
 
 
 static int
-debug(const char *format, ...)
+_ParseDelimitedText_parse(ParseDelimitedText * self)
+{
+  while(self->input->position < self->input->length) {
+    if(self->stop != 0) {
+      break;
+    }
+
+    self->lookahead->m->truncate(self->lookahead);
+    self->lookahead->m->slice(self->lookahead, self->input, 9);
+    self->input->position++;
+
+    _ParseDelimitedText_identify_character(self);
+
+    /* DEBUG */
+    debug("I: >>%s<<\n", self->input->string);
+    debug("S: %s, C: %s, P: %zu, L: >>%s<<, F: >>%s<<\n", self->m->state_to_s(self), self->m->char_class_to_s(self), self->input->position, self->lookahead->string, self->field->string);
+    debug("-----\n");
+
+    switch(self->state) {
+      case ST_RECORD_NOT_BEGUN:
+      case ST_FIELD_NOT_BEGUN:
+        /* Unquoted Leading White space */
+        if(self->character_class == CL_WHITE_SPACE) {
+          continue;
+        }
+
+        /* Carriage Return or Line Feed */
+        if(self->character_class == CL_EOL) {
+          if(self->state == ST_FIELD_NOT_BEGUN) {
+            debug("parse() 1: fire_field_callback()\n");
+            self->m->fire_field_callback(self);
+            self->m->fire_record_callback(self);
+          } 
+          /* ST_RECORD_NOT_BEGUN ignore empty rows by default */
+          else if(self->options & PDT_REPALL_NL) {
+            debug("parse() 1: append slice self->lookahead\n");
+            self->field->m->append_slice(self->field, self->lookahead, 1);
+            debug("parse() 2: fire_field_callback()\n");
+            self->m->fire_field_callback(self);
+            self->m->fire_record_callback(self);
+          }
+          continue;
+        }
+        /* Delimiter */
+        else if(self->character_class == CL_FS) {
+          debug("parse() 3: fire_field_callback()\n");
+          self->m->fire_field_callback(self);
+          continue;
+        }
+        /* Quote */
+        else if(self->character_class == CL_QUOTE) {
+          self->state = ST_QUOTED_FIELD;
+        }
+        /* Anything else */
+        else if(self->character_class == CL_CHAR) {
+          self->state = ST_FIELD;
+          /* Add any trailing white space after we've determined there are chars following it. */
+          if(self->trailing_space->length != 0) {
+            debug("parse() 2: append slice self->trailing_space\n");
+            self->field->m->append(self->field, self->trailing_space);
+            self->trailing_space->m->truncate(self->trailing_space);
+          }
+
+          debug("parse() 3: append slice self->lookahead\n");
+          self->field->m->append_slice(self->field, self->lookahead, 1);
+        }
+      break;
+
+      case ST_FIELD:
+        /* Quote */
+        if(self->character_class == CL_QUOTE) {
+          /* STRICT ERROR - double quote inside non-quoted field */
+          if(self->options & PDT_STRICT) {
+            self->status = PDT_EPARSE;
+            return self->input->position - 1;
+          }
+
+          /* Add any trailing white space after we've determined there are chars following it. */
+          if(self->trailing_space->length != 0) {
+            debug("parse() 4: append slice self->trailing_space\n");
+            self->field->m->append(self->field, self->trailing_space);
+            self->trailing_space->m->truncate(self->trailing_space);
+          }
+
+          debug("parse() 5: append slice self->lookahead\n");
+          self->field->m->append_slice(self->field, self->lookahead, 1);
+        }
+        /* Delimiter */
+        else if(self->character_class == CL_FS) {
+          debug("parse() 4: fire_field_callback()\n");
+          self->m->fire_field_callback(self);
+        }
+        /* Carriage Return or Line Feed */
+        else if(self->character_class == CL_EOL) {
+          debug("parse() 5: fire_field_callback()\n");
+          self->m->fire_field_callback(self);
+          self->m->fire_record_callback(self);
+        }
+        /* White space for non-quoted field */
+        else if(self->character_class == CL_WHITE_SPACE) {
+          self->trailing_space->m->append_slice(self->trailing_space, self->lookahead, 1);
+        }
+        /* Anything else */
+        else if(self->character_class == CL_CHAR) {
+          /* Add any trailing white space after we've determined there are chars following it. */
+          if(self->trailing_space->length != 0) {
+            debug("parse() 6: append slice self->trailing_space\n");
+            self->field->m->append(self->field, self->trailing_space);
+            self->trailing_space->m->truncate(self->trailing_space);
+          }
+
+          debug("parse() 7: append slice self->lookahead\n");
+          self->field->m->append_slice(self->field, self->lookahead, 1);
+        }
+      break;
+
+      case ST_QUOTED_FIELD:
+        /* Quote */
+        if(self->character_class == CL_QUOTE) {
+          self->state = ST_POSSIBLE_QUOTED_END;
+        }
+        /* Non-quote */
+        else if(self->character_class == CL_FS
+           || self->character_class == CL_EOL
+           || self->character_class == CL_WHITE_SPACE
+           || self->character_class == CL_CHAR) {
+          /* Add any trailing white space after we've determined there are chars following it. */
+          if(self->trailing_space->length != 0) {
+            debug("parse() 8: append slice self->trailing_space\n");
+            self->field->m->append(self->field, self->trailing_space);
+            self->trailing_space->m->truncate(self->trailing_space);
+          }
+
+          debug("parse() 9: append slice self->lookahead\n");
+          self->field->m->append_slice(self->field, self->lookahead, 1);
+        }
+      break;
+
+      /* This only happens when a quote character is encountered in a quoted field */
+      case ST_POSSIBLE_QUOTED_END:
+        /* Delimiter */
+        if(self->character_class == CL_FS) {
+          debug("parse() 6: fire_field_callback()\n");
+          self->m->fire_field_callback(self);
+        }
+        /* Carriage Return or Line Feed */
+        else if(self->character_class == CL_EOL) {
+          debug("parse() 7: fire_field_callback()\n");
+          self->m->fire_field_callback(self);
+          self->m->fire_record_callback(self);
+        }
+        /* Quote - Two quotes in a row */
+        else if(self->character_class == CL_QUOTE) {
+          /* Add any trailing white space after we've determined there are chars following it. */
+          if(self->trailing_space->length != 0) {
+            debug("parse() 10: append slice self->trailing_space\n");
+            self->field->m->append(self->field, self->trailing_space);
+            self->trailing_space->m->truncate(self->trailing_space);
+          }
+
+          self->state = ST_QUOTED_FIELD;
+          debug("parse() 11: append slice self->lookahead\n");
+          self->field->m->append_slice(self->field, self->lookahead, 1);
+        }
+        /* Anything else */
+        else if(self->character_class == CL_WHITE_SPACE
+           || self->character_class == CL_CHAR) {
+          if(self->options & PDT_STRICT) {
+            /* STRICT ERROR - unescaped double quote */
+            self->status = PDT_EPARSE;
+            return self->input->position - 1;
+          }
+
+          /* Add the previous character which is a quote because we're in ST_POSSIBLE_QUOTED_END */
+          debug("parse() 12: append slice self->quote\n");
+          self->field->m->append_slice(self->field, self->quote, 1);
+
+          /* Add any trailing white space after we've determined there are chars following it. */
+          if(self->trailing_space->length != 0) {
+            debug("parse() 13: append slice self->trailing_space\n");
+            self->field->m->append(self->field, self->trailing_space);
+            self->trailing_space->m->truncate(self->trailing_space);
+          }
+
+          self->state = ST_QUOTED_FIELD;
+          debug("parse() 13: append slice self->lookahead\n");
+          self->field->m->append_slice(self->field, self->lookahead, 1);
+        }
+      break; 
+    } /* switch */
+  } /* while */
+
+  return (self->status == PDT_SUCCESS) ? self->input->position : -1;
+}
+
+static int
+debug(const char * format, ...)
 {
   int r = 0;
   va_list args;
@@ -707,5 +742,3 @@ debug(const char *format, ...)
 
   return r;
 }
-
-

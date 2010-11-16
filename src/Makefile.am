@@ -6,8 +6,8 @@ AM_CFLAGS = -g -std=c99 -Wall -arch x86_64
 AM_LDFLAGS = -version-info 0:0:0
 
 libpdt_la_SOURCES = class_ParseDelimitedText_i.c
-libpdt_la_includedir = $(includedir)/parse_delimited_text
+libpdt_la_includedir = $(includedir)/tgcl
 libpdt_la_include_HEADERS = class_ParseDelimitedText.h
 libpdt_la_CPPFLAGS = $(TGCL_CFLAGS)
-libpdt_la_LIBS = $(TGCL_LIBS)
+libpdt_la_LIBS = $(TGCL_LIBS) -lpdt_format_file
 noinst_HEADERS = class_ParseDelimitedText_i.h dependencies.h

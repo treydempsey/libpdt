@@ -30,36 +30,38 @@ int                         class_ParseDelimitedText(void);
 ParseDelimitedText *        new_ParseDelimitedText(unsigned char options);
 ParseDelimitedText *        alloc_ParseDelimitedText(void);
 
-static ParseDelimitedText * ParseDelimitedText_init(ParseDelimitedText *self, unsigned char options);
-static ParseDelimitedText * ParseDelimitedText_free(ParseDelimitedText *self);
+static ParseDelimitedText * ParseDelimitedText_init(ParseDelimitedText * self, unsigned char options);
+static ParseDelimitedText * ParseDelimitedText_free(ParseDelimitedText * self);
 
-static size_t               ParseDelimitedText_block_size(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_set_block_size(ParseDelimitedText *self, size_t new_block_size);
-static String *             ParseDelimitedText_delimiter(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_set_delimiter(ParseDelimitedText *self, char *new_delimiter, size_t new_delimiter_length);
-static String *             ParseDelimitedText_quote(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_set_quote(ParseDelimitedText *self, char *new_quote, size_t new_quote_length);
+static ParseDelimitedText * ParseDelimitedText_set_block_size(ParseDelimitedText * self, size_t new_block_size);
+static ParseDelimitedText * ParseDelimitedText_set_delimiter(ParseDelimitedText * self, char * new_delimiter, size_t new_delimiter_length);
+static ParseDelimitedText * ParseDelimitedText_set_quote(ParseDelimitedText * self, char * new_quote, size_t new_quote_length);
+static ParseDelimitedText * ParseDelimitedText_set_field_callback(ParseDelimitedText * self, void (*new_field_callback)(ParseDelimitedText * self, String * field));
+static ParseDelimitedText * ParseDelimitedText_set_record_callback(ParseDelimitedText * self, void (*new_record_callback)(ParseDelimitedText * self, char eol));
 
-static size_t               ParseDelimitedText_parse(ParseDelimitedText *self, char *input, size_t input_length);
-static size_t               ParseDelimitedText_finish(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_reset_state(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_fire_field_callback(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_fire_record_callback(ParseDelimitedText *self);
-static ParseDelimitedText * ParseDelimitedText_stop(ParseDelimitedText *self);
-static char *               ParseDelimitedText_state_to_s(ParseDelimitedText *self);
-static char *               ParseDelimitedText_status_to_s(ParseDelimitedText *self);
-static char *               ParseDelimitedText_char_class_to_s(ParseDelimitedText *self);
+static size_t               ParseDelimitedText_parse(ParseDelimitedText * self, char * input, size_t input_length);
+static size_t               ParseDelimitedText_finish(ParseDelimitedText * self);
+static ParseDelimitedText * ParseDelimitedText_apply_format(ParseDelimitedText * self, PDTFormat * format);
+static ParseDelimitedText * ParseDelimitedText_reset_state(ParseDelimitedText * self);
+static ParseDelimitedText * ParseDelimitedText_fire_field_callback(ParseDelimitedText * self);
+static ParseDelimitedText * ParseDelimitedText_fire_record_callback(ParseDelimitedText * self);
+static ParseDelimitedText * ParseDelimitedText_stop(ParseDelimitedText * self);
+static char *               ParseDelimitedText_state_to_s(ParseDelimitedText * self);
+static char *               ParseDelimitedText_status_to_s(ParseDelimitedText * self);
+static char *               ParseDelimitedText_char_class_to_s(ParseDelimitedText * self);
 
-static ParseDelimitedText * _ParseDelimitedText_identify_character(ParseDelimitedText *self);
-static int                  debug(const char *format, ...);
+/* Private Methods */
+static ParseDelimitedText * _ParseDelimitedText_identify_character(ParseDelimitedText * self);
+static int                  _ParseDelimitedText_parse(ParseDelimitedText * self);
+static int                  debug(const char * format, ...);
 
 /* Global Variables */
-ParseDelimitedText        *null_ParseDelimitedText = NULL;
+ParseDelimitedText *        null_ParseDelimitedText = NULL;
 
-static ParseDelimitedText _null_ParseDelimitedText;
+static ParseDelimitedText   _null_ParseDelimitedText;
 static ParseDelimitedTextMethods ParseDelimitedText_methods;
 
-static char               *ParseDelimitedText_states[] = {
+static char *               ParseDelimitedText_states[] = {
   "record not begun",
   "field not begun",
   "field",
@@ -69,7 +71,7 @@ static char               *ParseDelimitedText_states[] = {
   "possible delimiter end"
 };
 
-static char               *ParseDelimitedText_statuses[] = {
+static char *               ParseDelimitedText_statuses[] = {
   "success",
   "error parsing data while strict checking enabled",
   "memory exhausted while increasing buffer size",
@@ -77,7 +79,7 @@ static char               *ParseDelimitedText_statuses[] = {
   "invalid status code"
 };
 
-static char               *ParseDelimitedText_character_classes[] = {
+static char *               ParseDelimitedText_character_classes[] = {
   "char",
   "delim",
   "partial delim",
