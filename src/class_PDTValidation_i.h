@@ -20,25 +20,31 @@
  *  along with libpdt.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#ifndef _DEPENDENCIES_H_
-#define _DEPENDENCIES_H_
+#ifndef _CLASS_PDTVALIDATION_I_H_
+#define _CLASS_PDTVALIDATION_I_H_
 
-/* TODO Switch to HAVE_STDINT */
-#if ___STDC_VERSION__ >= 199901L
-#  include <stdint.h>
-#else
-#  define SIZE_MAX ((size_t)-1) /* C89 doesn't have stdint.h or SIZE_MAX */
-#endif
+#include "class_PDTValidation.h"
 
-#include <ctype.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/uio.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 
-#endif /* not _DEPENDENCIES_H_ */
+/* Class Methods */
+int                     class_PDTValidation(void);
+PDTValidation *         new_PDTValidation(char * validation, size_t validation_length);
+PDTValidation *         alloc_PDTValidation(void);
+
+
+/* Instance Methods */
+static PDTValidation * PDTValidation_init(PDTValidation * self, char * validation, size_t validation_length);
+static PDTValidation * PDTValidation_free(PDTValidation * self);
+
+
+/* Private Instance Methods */
+
+static PDTValidation * _PDTValidation_parse_arguments(PDTValidation * self);
+
+
+/* Global Variables */
+PDTValidation *        null_PDTValidation = NULL;
+PDTValidation          _null_PDTValidation;
+PDTValidationMethods   PDTValidation_methods;
+
+#endif /* not _CLASS_PDTVALIDATION_I_H_ */

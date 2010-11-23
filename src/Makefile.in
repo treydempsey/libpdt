@@ -16,6 +16,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -35,6 +36,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+bin_PROGRAMS = dump_format_file$(EXEEXT)
 subdir = src
 DIST_COMMON = $(libpdt_la_include_HEADERS) $(noinst_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -70,12 +72,24 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(libdir)" \
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(libpdt_la_includedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libpdt_la_LIBADD =
-am_libpdt_la_OBJECTS = libpdt_la-class_ParseDelimitedText_i.lo
+am_libpdt_la_OBJECTS = libpdt_la-class_ParseDelimitedText_i.lo \
+	libpdt_la-class_PDTFormatFile_i.lo \
+	libpdt_la-class_PDTFormat_i.lo libpdt_la-class_PDTColumn_i.lo \
+	libpdt_la-class_PDTValidation_i.lo \
+	libpdt_la-class_PDTValidator_i.lo
 libpdt_la_OBJECTS = $(am_libpdt_la_OBJECTS)
+PROGRAMS = $(bin_PROGRAMS)
+am_dump_format_file_OBJECTS =  \
+	dump_format_file-dump_format_file.$(OBJEXT)
+dump_format_file_OBJECTS = $(am_dump_format_file_OBJECTS)
+dump_format_file_DEPENDENCIES = libpdt.la
+dump_format_file_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(dump_format_file_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -89,8 +103,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libpdt_la_SOURCES)
-DIST_SOURCES = $(libpdt_la_SOURCES)
+SOURCES = $(libpdt_la_SOURCES) $(dump_format_file_SOURCES)
+DIST_SOURCES = $(libpdt_la_SOURCES) $(dump_format_file_SOURCES)
 HEADERS = $(libpdt_la_include_HEADERS) $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -215,12 +229,16 @@ AUTOMAKE_OPTIONS = gnu
 lib_LTLIBRARIES = libpdt.la
 AM_CFLAGS = -g -std=c99 -Wall -arch x86_64
 AM_LDFLAGS = -version-info 0:0:0
-libpdt_la_SOURCES = class_ParseDelimitedText_i.c
+libpdt_la_SOURCES = class_ParseDelimitedText_i.c class_PDTFormatFile_i.c class_PDTFormat_i.c class_PDTColumn_i.c class_PDTValidation_i.c class_PDTValidator_i.c
 libpdt_la_includedir = $(includedir)/tgcl
-libpdt_la_include_HEADERS = class_ParseDelimitedText.h
+libpdt_la_include_HEADERS = class_ParseDelimitedText.h class_PDTFormatFile.h class_PDTFormat.h class_PDTColumn.h class_PDTValidation.h class_PDTValidator.h pdt.h
 libpdt_la_CPPFLAGS = $(TGCL_CFLAGS)
-libpdt_la_LIBS = $(TGCL_LIBS) -lpdt_format_file
-noinst_HEADERS = class_ParseDelimitedText_i.h dependencies.h
+libpdt_la_LIBS = $(TGCL_LIBS)
+noinst_HEADERS = class_ParseDelimitedText_i.h class_PDTFormatFile_i.h class_PDTFormat_i.h class_PDTColumn_i.h class_PDTValidation_i.h class_PDTValidator_i.h dependencies.h
+dump_format_file_SOURCES = dump_format_file.c
+dump_format_file_LDADD = libpdt.la
+dump_format_file_CPPFLAGS = $(TGCL_CFLAGS)
+dump_format_file_LDFLAGS = $(TGCL_LIBS)
 all: all-am
 
 .SUFFIXES:
@@ -288,6 +306,52 @@ clean-libLTLIBRARIES:
 	done
 libpdt.la: $(libpdt_la_OBJECTS) $(libpdt_la_DEPENDENCIES) 
 	$(LINK) -rpath $(libdir) $(libpdt_la_OBJECTS) $(libpdt_la_LIBADD) $(LIBS)
+install-binPROGRAMS: $(bin_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	for p in $$list; do echo "$$p $$p"; done | \
+	sed 's/$(EXEEXT)$$//' | \
+	while read p p1; do if test -f $$p || test -f $$p1; \
+	  then echo "$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n;h' -e 's|.*|.|' \
+	    -e 'p;x;s,.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/' | \
+	sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1 } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) files[d] = files[d] " " $$1; \
+	    else { print "f", $$3 "/" $$4, $$1; } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	    test -z "$$files" || { \
+	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	    } \
+	; done
+
+uninstall-binPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
+	      -e 's/$$/$(EXEEXT)/' `; \
+	test -n "$$list" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+
+clean-binPROGRAMS:
+	@list='$(bin_PROGRAMS)'; test -n "$$list" || exit 0; \
+	echo " rm -f" $$list; \
+	rm -f $$list || exit $$?; \
+	test -n "$(EXEEXT)" || exit 0; \
+	list=`for p in $$list; do echo "$$p"; done | sed 's/$(EXEEXT)$$//'`; \
+	echo " rm -f" $$list; \
+	rm -f $$list
+dump_format_file$(EXEEXT): $(dump_format_file_OBJECTS) $(dump_format_file_DEPENDENCIES) 
+	@rm -f dump_format_file$(EXEEXT)
+	$(dump_format_file_LINK) $(dump_format_file_OBJECTS) $(dump_format_file_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -295,6 +359,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dump_format_file-dump_format_file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpdt_la-class_PDTColumn_i.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpdt_la-class_PDTFormatFile_i.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpdt_la-class_PDTFormat_i.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpdt_la-class_PDTValidation_i.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpdt_la-class_PDTValidator_i.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpdt_la-class_ParseDelimitedText_i.Plo@am__quote@
 
 .c.o:
@@ -324,6 +394,55 @@ libpdt_la-class_ParseDelimitedText_i.lo: class_ParseDelimitedText_i.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_ParseDelimitedText_i.c' object='libpdt_la-class_ParseDelimitedText_i.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libpdt_la-class_ParseDelimitedText_i.lo `test -f 'class_ParseDelimitedText_i.c' || echo '$(srcdir)/'`class_ParseDelimitedText_i.c
+
+libpdt_la-class_PDTFormatFile_i.lo: class_PDTFormatFile_i.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libpdt_la-class_PDTFormatFile_i.lo -MD -MP -MF $(DEPDIR)/libpdt_la-class_PDTFormatFile_i.Tpo -c -o libpdt_la-class_PDTFormatFile_i.lo `test -f 'class_PDTFormatFile_i.c' || echo '$(srcdir)/'`class_PDTFormatFile_i.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libpdt_la-class_PDTFormatFile_i.Tpo $(DEPDIR)/libpdt_la-class_PDTFormatFile_i.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_PDTFormatFile_i.c' object='libpdt_la-class_PDTFormatFile_i.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libpdt_la-class_PDTFormatFile_i.lo `test -f 'class_PDTFormatFile_i.c' || echo '$(srcdir)/'`class_PDTFormatFile_i.c
+
+libpdt_la-class_PDTFormat_i.lo: class_PDTFormat_i.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libpdt_la-class_PDTFormat_i.lo -MD -MP -MF $(DEPDIR)/libpdt_la-class_PDTFormat_i.Tpo -c -o libpdt_la-class_PDTFormat_i.lo `test -f 'class_PDTFormat_i.c' || echo '$(srcdir)/'`class_PDTFormat_i.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libpdt_la-class_PDTFormat_i.Tpo $(DEPDIR)/libpdt_la-class_PDTFormat_i.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_PDTFormat_i.c' object='libpdt_la-class_PDTFormat_i.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libpdt_la-class_PDTFormat_i.lo `test -f 'class_PDTFormat_i.c' || echo '$(srcdir)/'`class_PDTFormat_i.c
+
+libpdt_la-class_PDTColumn_i.lo: class_PDTColumn_i.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libpdt_la-class_PDTColumn_i.lo -MD -MP -MF $(DEPDIR)/libpdt_la-class_PDTColumn_i.Tpo -c -o libpdt_la-class_PDTColumn_i.lo `test -f 'class_PDTColumn_i.c' || echo '$(srcdir)/'`class_PDTColumn_i.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libpdt_la-class_PDTColumn_i.Tpo $(DEPDIR)/libpdt_la-class_PDTColumn_i.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_PDTColumn_i.c' object='libpdt_la-class_PDTColumn_i.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libpdt_la-class_PDTColumn_i.lo `test -f 'class_PDTColumn_i.c' || echo '$(srcdir)/'`class_PDTColumn_i.c
+
+libpdt_la-class_PDTValidation_i.lo: class_PDTValidation_i.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libpdt_la-class_PDTValidation_i.lo -MD -MP -MF $(DEPDIR)/libpdt_la-class_PDTValidation_i.Tpo -c -o libpdt_la-class_PDTValidation_i.lo `test -f 'class_PDTValidation_i.c' || echo '$(srcdir)/'`class_PDTValidation_i.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libpdt_la-class_PDTValidation_i.Tpo $(DEPDIR)/libpdt_la-class_PDTValidation_i.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_PDTValidation_i.c' object='libpdt_la-class_PDTValidation_i.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libpdt_la-class_PDTValidation_i.lo `test -f 'class_PDTValidation_i.c' || echo '$(srcdir)/'`class_PDTValidation_i.c
+
+libpdt_la-class_PDTValidator_i.lo: class_PDTValidator_i.c
+@am__fastdepCC_TRUE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libpdt_la-class_PDTValidator_i.lo -MD -MP -MF $(DEPDIR)/libpdt_la-class_PDTValidator_i.Tpo -c -o libpdt_la-class_PDTValidator_i.lo `test -f 'class_PDTValidator_i.c' || echo '$(srcdir)/'`class_PDTValidator_i.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/libpdt_la-class_PDTValidator_i.Tpo $(DEPDIR)/libpdt_la-class_PDTValidator_i.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='class_PDTValidator_i.c' object='libpdt_la-class_PDTValidator_i.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL)  --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libpdt_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libpdt_la-class_PDTValidator_i.lo `test -f 'class_PDTValidator_i.c' || echo '$(srcdir)/'`class_PDTValidator_i.c
+
+dump_format_file-dump_format_file.o: dump_format_file.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dump_format_file_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dump_format_file-dump_format_file.o -MD -MP -MF $(DEPDIR)/dump_format_file-dump_format_file.Tpo -c -o dump_format_file-dump_format_file.o `test -f 'dump_format_file.c' || echo '$(srcdir)/'`dump_format_file.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dump_format_file-dump_format_file.Tpo $(DEPDIR)/dump_format_file-dump_format_file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dump_format_file.c' object='dump_format_file-dump_format_file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dump_format_file_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dump_format_file-dump_format_file.o `test -f 'dump_format_file.c' || echo '$(srcdir)/'`dump_format_file.c
+
+dump_format_file-dump_format_file.obj: dump_format_file.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dump_format_file_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dump_format_file-dump_format_file.obj -MD -MP -MF $(DEPDIR)/dump_format_file-dump_format_file.Tpo -c -o dump_format_file-dump_format_file.obj `if test -f 'dump_format_file.c'; then $(CYGPATH_W) 'dump_format_file.c'; else $(CYGPATH_W) '$(srcdir)/dump_format_file.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dump_format_file-dump_format_file.Tpo $(DEPDIR)/dump_format_file-dump_format_file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dump_format_file.c' object='dump_format_file-dump_format_file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dump_format_file_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dump_format_file-dump_format_file.obj `if test -f 'dump_format_file.c'; then $(CYGPATH_W) 'dump_format_file.c'; else $(CYGPATH_W) '$(srcdir)/dump_format_file.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -435,9 +554,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(HEADERS)
+install-binPROGRAMS: install-libLTLIBRARIES
+
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(libpdt_la_includedir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(libpdt_la_includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -467,8 +588,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libLTLIBRARIES clean-libtool \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -494,7 +615,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-libLTLIBRARIES
+install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
 
 install-html: install-html-am
 
@@ -534,26 +655,26 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libLTLIBRARIES \
+uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES \
 	uninstall-libpdt_la_includeHEADERS
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libLTLIBRARIES clean-libtool ctags distclean \
-	distclean-compile distclean-generic distclean-libtool \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libLTLIBRARIES install-libpdt_la_includeHEADERS \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-libLTLIBRARIES \
-	uninstall-libpdt_la_includeHEADERS
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
+	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
+	distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-libpdt_la_includeHEADERS install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-libLTLIBRARIES uninstall-libpdt_la_includeHEADERS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

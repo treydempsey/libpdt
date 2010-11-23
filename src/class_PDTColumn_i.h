@@ -20,25 +20,32 @@
  *  along with libpdt.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#ifndef _DEPENDENCIES_H_
-#define _DEPENDENCIES_H_
+#ifndef _CLASS_PDTCOLUMN_I_H_
+#define _CLASS_PDTCOLUMN_I_H_
 
-/* TODO Switch to HAVE_STDINT */
-#if ___STDC_VERSION__ >= 199901L
-#  include <stdint.h>
-#else
-#  define SIZE_MAX ((size_t)-1) /* C89 doesn't have stdint.h or SIZE_MAX */
-#endif
+#include "class_PDTColumn.h"
 
-#include <ctype.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/uio.h>
-#include <unistd.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 
-#endif /* not _DEPENDENCIES_H_ */
+/* Class Methods */
+int                     class_PDTColumn(void);
+PDTColumn *             new_PDTColumn(char * column, size_t column_length);
+PDTColumn *             alloc_PDTColumn(void);
+
+
+/* Instance Methods */
+static PDTColumn *      PDTColumn_init(PDTColumn * self, char * column, size_t column_length);
+static PDTColumn *      PDTColumn_free(PDTColumn * self);
+
+static PDTColumn *      PDTColumn_add_validation(PDTColumn * self, char * validation, size_t column_length);
+
+/* Private Instance Methods */
+static void             _PDTValidation_Array_free(void * data);
+
+
+/* Global Variables */
+PDTColumn *             null_PDTColumn = NULL;
+
+static PDTColumn        _null_PDTColumn;
+static PDTColumnMethods PDTColumn_methods;
+
+#endif /* not _CLASS_PDTCOLUMN_I_H_ */

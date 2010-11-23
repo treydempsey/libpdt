@@ -20,17 +20,11 @@
  *  along with libpdt.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
 
-#ifndef _DEPENDENCIES_H_
-#define _DEPENDENCIES_H_
+#ifndef _PDT_FORMAT_FILE_H_
+#define _PDT_FORMAT_FILE_H_
 
-/* TODO Switch to HAVE_STDINT */
-#if ___STDC_VERSION__ >= 199901L
-#  include <stdint.h>
-#else
-#  define SIZE_MAX ((size_t)-1) /* C89 doesn't have stdint.h or SIZE_MAX */
-#endif
-
-#include <ctype.h>
+/* TODO Trim down to external dependencies only */
+#include <stdint.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -40,5 +34,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
 
-#endif /* not _DEPENDENCIES_H_ */
+#include <class_PDTColumn.h>
+#include <class_PDTFormat.h>
+#include <class_PDTFormatFile.h>
+#include <class_PDTValidation.h>
+#include <class_PDTValidator.h>
+#include <class_ParseDelimitedText.h>
+
+#endif /* not _PDT_FORMAT_FILE_H_ */
