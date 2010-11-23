@@ -50,7 +50,7 @@ class_PDTValidator(void)
     PDTValidator_methods.utf8_valid   = PDTValidator_utf8_valid;
     PDTValidator_methods.value_in     = PDTValidator_value_in;
 
-    /* Null PDTStandardValidation Instance */
+    /* Null PDTValidator Instance */
     null_PDTValidator = &_null_PDTValidator;
     null_PDTValidator->handle = &null_PDTValidator;
     null_PDTValidator->m = &PDTValidator_methods;
@@ -139,16 +139,6 @@ PDTValidator_dispatch(PDTValidator * self, PDTValidation * validation, String * 
 { /* {{{ */
   int valid = 1;
 
-  /*
-     length
-     valid_in
-     not_null
-     is_integer
-     utf8_valid
-     utf8_length
-     is_timestamp  
-  */ 
-
   if(self != null_PDTValidator && validation != null_PDTValidation) {
     /* Switch on length then key character */
     switch(validation->validation_name->length) {
@@ -162,11 +152,13 @@ PDTValidator_dispatch(PDTValidator * self, PDTValidation * validation, String * 
         switch(*(validation->validation_name->string)) {
           /* not_null */
           case 'n':
+          case 'N':
             valid = self->m->not_null(self, validation->arguments, subject);
           break;
 
           /* value_in */
           case 'v':
+          case 'V':
             valid = self->m->value_in(self, validation->arguments, subject);
           break;
 
@@ -179,11 +171,15 @@ PDTValidator_dispatch(PDTValidator * self, PDTValidation * validation, String * 
       /* is_integer, utf8_valid */
       case 10:
         switch(*(validation->validation_name->string)) {
+          /* is_integer */
           case 'i':
+          case 'I':
             valid = self->m->is_integer(self, validation->arguments, subject);
           break;
 
+          /* utf8_valid */
           case 'u':
+          case 'U':
             valid = self->m->utf8_valid(self, validation->arguments, subject);
           break;
 
