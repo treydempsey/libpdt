@@ -49,7 +49,7 @@ typedef struct ParseDelimitedText {
   void                                (*field_callback)(struct ParseDelimitedText * parser, String * field);
   void                                (*record_callback)(struct ParseDelimitedText * parser, char eol);
   
-  /* Instants Variables */
+  /* Instance Variables */
   String *                            input;
   String *                            field;
   String *                            lookahead;
@@ -60,6 +60,7 @@ typedef struct ParseDelimitedText {
   int                                 state;
   int                                 status;
   int                                 stop;
+  void *                              user_data;
 
   struct ParseDelimitedTextMethods *  m;
 } ParseDelimitedText;

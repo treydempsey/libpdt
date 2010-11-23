@@ -137,11 +137,6 @@ run_test(
   size_t retval;
   size_t size;
 
-  class_String();
-  class_Array();
-  class_ArrayElement();
-  class_ParseDelimitedText();
-
   for(size = 1; size <= len; size++) {
     size_t bytes_processed = 0;
     current_test_name = test_name;

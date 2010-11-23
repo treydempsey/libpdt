@@ -72,6 +72,10 @@ new_ParseDelimitedText(unsigned char options)
 {
   ParseDelimitedText * self;
 
+  if(null_ParseDelimitedText == NULL) {
+    class_ParseDelimitedText();
+  }
+
   self = alloc_ParseDelimitedText();
   self->m->init(self, options);
 
