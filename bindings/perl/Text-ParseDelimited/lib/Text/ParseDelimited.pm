@@ -47,11 +47,39 @@ Text::ParseDelimited - Perl extension for parsing delimited text.
 
   use Text::ParseDelimited;
 
+  my $fields = [];
+
+  sub field
+  {
+    my ($parser, $field) = @_;
+    push(@$fields, $field);
+  }
+
+  sub record
+  {
+    my ($parser, $eol) = @_;
+    print "Found: ", join(@$fields, ", "), "\n";
+    @$fields = [];
+  }
+
+  my $parser = Text::ParseDelimited::new(0);
+  $parser->delimiter = "|";
+  $parser->field_callback = \&field;
+  $parser->record_callback = \&record;
+
+  open(my $f, "<", "input.txt");
+  while(read($f, my $data, 100)) {
+    $parser->parse($data);
+  }
+  $parser->finish();
+  close($f);
+
 =head1 DESCRIPTION
 
-Stub documentation for Text::ParseDelimited, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+Text::ParseDelimited is a perl binding for libpdt, a library for parsing
+delimited text.  It supports multicharacter delimiters, quoting, and has
+improper quote handling.  Although it can be configured to parse comma
+separated values, it is designed to be a more generic delmited text parser.
 
 =head2 EXPORT
 
@@ -59,26 +87,34 @@ None by default.
 
 =head1 SEE ALSO
 
-Mention other useful documentation such as the documentation of
-related modules or operating system documentation (such as man pages
-in UNIX), or any relevant external documentation such as RFCs or
-standards.
-
-If you have a mailing list set up for your module, mention it here.
-
-If you have a web site set up for your module, mention it here.
+http://github.com/libpdt
+http://github.com/libtgcl
 
 =head1 AUTHOR
 
-Trey & TK, E<lt>treytk@pvtE<gt>
+Trey Dempsey, E<lt>trey.dempsey@gmail.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2010 by Trey & TK
+Copyright 2010  Trey Dempsey
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself, either Perl version 5.8.9 or,
-at your option, any later version of Perl 5 you may have available.
+libpdt is distributed under the terms of the GNU Lesser General Public
+License.
+
+This file is part of libpdt.
+
+libpdt is free software: you can redistribute it and/or modify it under the
+terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option)
+any later version.
+
+libpdt is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with libpdt.  If not, see <http://www.gnu.org/licenses/>.
 
 
 =cut
