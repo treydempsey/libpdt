@@ -16,3 +16,7 @@ libtool
 stamp-h1
 test_??-?
 Makefile
+tools/add_constants
+tools/standard_form
+tools/validate_content
+tools/validate_structure

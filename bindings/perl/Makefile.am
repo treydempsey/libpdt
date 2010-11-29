@@ -36,7 +36,7 @@ endif
 
 EXTRA_DIST = \
         Text-ParseDelimited/ppport.h \
-        Text-ParseDelimited/ParseDelimited.xs \
+        Text-ParseDelimited/Text-ParseDelimited.xs \
         Text-ParseDelimited/lib/Text/ParseDelimited.pm \
         Text-ParseDelimited/Makefile.PL \
         Text-ParseDelimited/README \

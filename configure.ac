@@ -1,4 +1,4 @@
-AC_INIT([libpdt], [0.0.1])
+AC_INIT([libpdt], [0.0.2])
 AC_CONFIG_SRCDIR([src/class_ParseDelimitedText_i.c])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])

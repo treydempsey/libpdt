@@ -174,7 +174,7 @@ top_srcdir = @top_srcdir@
 @PERL_BINDINGS_TRUE@PERLCONFIG = PREFIX="$(prefix)" $(am__append_1)
 EXTRA_DIST = \
         Text-ParseDelimited/ppport.h \
-        Text-ParseDelimited/ParseDelimited.xs \
+        Text-ParseDelimited/Text-ParseDelimited.xs \
         Text-ParseDelimited/lib/Text/ParseDelimited.pm \
         Text-ParseDelimited/Makefile.PL \
         Text-ParseDelimited/README \
