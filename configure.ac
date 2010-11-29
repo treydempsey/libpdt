@@ -6,6 +6,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_LANG_C
 AC_PROG_AWK
 AC_PROG_CC
+AM_PROG_CC_C_O
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
@@ -62,5 +63,6 @@ AC_CONFIG_FILES([
   src/tests/Makefile
   bindings/perl/Makefile
   bindings/perl/Text-ParseDelimited/Makefile.PL
+  tools/Makefile
 ]) 
 AC_OUTPUT
