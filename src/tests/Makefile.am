@@ -1,7 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
 
-AM_CFLAGS = -std=c99 $(TGCL_CFLAGS)
-LIBS = $(TGCL_LIBS)
+AM_CFLAGS = -std=c99 $(libtgcl_CFLAGS)
+LIBS = $(libtgcl_LIBS)
 
 TESTS = $(check_PROGRAMS)
 INCLUDES = -I..

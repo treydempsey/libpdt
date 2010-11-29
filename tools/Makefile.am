@@ -1,8 +1,8 @@
 AUTOMAKE_OPTIONS = gnu
 
-AM_CPPFLAGS = $(TGCL_CFLAGS)
+AM_CPPFLAGS = $(libtgcl_CFLAGS)
 AM_CFLAGS = -g -std=c99 -Wall -arch x86_64 -fnested-functions
-AM_LDFLAGS = $(TGCL_LIBS)
+AM_LDFLAGS = $(libtgcl_LIBS)
 LDADD = ../src/libpdt.la
 
 bin_PROGRAMS = add_constants standard_form validate_content validate_structure
